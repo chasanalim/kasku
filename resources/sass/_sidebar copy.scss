@@ -1,0 +1,126 @@
+.sidebar {
+    background: #1e1e2d;
+    width: 280px;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+
+    // Hide scrollbar for Chrome/Safari
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    // Hide scrollbar for IE/Edge/Firefox
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    .menu {
+        color: #565674;
+        font-size: 0.8rem;
+        padding-left: 0.5rem;
+    }
+
+    .sidebar-link {
+        transition: all 0.3s ease;
+        background: transparent;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+            padding-left: 1.5rem !important;
+        }
+
+        &.active {
+            background: #2a2a3c;
+            color: #009ef7 !important;
+        }
+
+        i {
+            width: 1.5rem;
+            text-align: center;
+        }
+    }
+
+    // Dropdown styling
+    .dropdown {
+        .dropdown-toggle {
+            width: 100%;
+            text-align: left;
+            position: relative;
+
+            &::after {
+                display: none;
+            }
+
+            .bi-chevron-down {
+                position: absolute;
+                right: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                transition: transform 0.3s ease;
+            }
+
+            &[aria-expanded="true"] {
+                background: #2a2a3c;
+
+                .bi-chevron-down {
+                    transform: translateY(-50%) rotate(180deg);
+                }
+            }
+        }
+
+        .dropdown-menu {
+            position: static !important;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            background: #1e1e2d;
+            border: none;
+            border-radius: 0;
+            transform: none !important;
+
+            .dropdown-item {
+                padding: 0.5rem 2rem;
+                color: #9899ac;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: #009ef7;
+                }
+
+                &.active {
+                    background: #2a2a3c;
+                    color: #009ef7;
+                }
+            }
+        }
+    }
+
+    // Profile section
+    .profile {
+        .profile_text {
+            color: #9899ac;
+        }
+    }
+}
+
+// Main content adjustment
+.main-content {
+    margin-left: 280px;
+    padding: 1rem;
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+
+        &.show {
+            transform: translateX(0);
+        }
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+}
