@@ -3,10 +3,12 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\IRController;
 use App\Http\Controllers\Admin\AkunController;
+use App\Http\Controllers\Admin\InfaqController;
+use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\JamaahController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\ShodaqahController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Admin\PrivilegesController;
@@ -27,8 +29,23 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('jamaah', JamaahController::class);
     Route::resource('akun', AkunController::class);
     Route::resource('transaksi', TransaksiController::class);
-    Route::resource('ir', IRController::class);
+    Route::resource('shodaqah', ShodaqahController::class);
+    Route::post('shodaqah/verify/{id}', [ShodaqahController::class, 'verify'])->name('shodaqah.verify');
+    Route::post('shodaqah/verify-multiple', [ShodaqahController::class, 'verifyMultiple'])->name('shodaqah.verify-multiple');
+    Route::delete('shodaqah/destroy-multiple', [ShodaqahController::class, 'destroyMultiple'])->name('shodaqah.destroy-multiple');
+    
+    Route::resource('infaq', InfaqController::class);
+    Route::post('infaq/verify/{id}', [InfaqController::class, 'verify'])->name('infaq.verify');
+    Route::post('infaq/verify-multiple', [InfaqController::class, 'verifyMultiple'])->name('infaq.verify-multiple');
+    Route::delete('infaq/destroy-multiple', [InfaqController::class, 'destroyMultiple'])->name('infaq.destroy-multiple');
     Route::resource('laporan', LaporanController::class);
+
+    Route::get('rekap-shodaqah', [LaporanController::class, 'rekapShodaqah'])->name('laporan.rekap-shodaqah');
+
+
+
+    Route::get('shodaqah/export/pdf', [ExportController::class, 'exportPDF'])->name('shodaqah.export.pdf');
+    Route::get('shodaqah/export/excel', [ExportController::class, 'exportExcel'])->name('shodaqah.export.excel');
 });
 
 require __DIR__ . '/auth.php';
