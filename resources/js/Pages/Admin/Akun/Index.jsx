@@ -17,7 +17,7 @@ export default function Index({ title, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.ir.index"),
+                url: route("admin.akun.index"),
                 type: "GET",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -66,73 +66,38 @@ export default function Index({ title, flash }) {
                     },
                 },
                 {
-                    data: "transaksi.tanggal",
-                    name: "transaksi.tanggal",
-                    className: "text-center",
+                    data: "nama",
+                    name: "nama",
                     orderable: true,
                     searchable: true,
                 },
                 {
-                    data: "jamaah.nama",
-                    name: "jamaah.nama",
+                    data: "kode_akun",
+                    name: "kode_akun",
                     orderable: true,
                     searchable: true,
                 },
                 {
-                    data: "ir",
-                    name: "ir",
-                    orderable: true,
-                    searchable: true,
+                    data: "tipe",
+                    name: "tipe",
                     render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
+                        return data === "Kas"
+                            ? `<span class="badge bg-info p-2">Kas</span>`
+                            : data === "Pemasukan"
+                            ? `<span class="badge bg-success p-2">Pemasukan</span>`
+                            : data === "Pengeluaran"
+                            ? `<span class="badge bg-danger p-2">Pengeluaran</span>`
+                            : `<span class="badge bg-warning p-2">Penampung</span>`;
                     },
                 },
                 {
-                    data: "syiar",
-                    name: "syiar",
-                    className: "text-center",
+                    data: "saldo_awal",
+                    name: "saldo_awal",
                     orderable: true,
                     searchable: true,
                     render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
+                        return `Rp. `+ data;
                     },
-                },
-                {
-                    data: "jumlah",
-                    name: "jumlah",
-                    className: "text-center",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
-                },
-
-                {
-                    data: "debit",
-                    name: "debit",
-                    className: "text-center",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
-                },
-                {
-                    data: "kredit",
-                    name: "kredit",
-                    className: "text-center",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
-                },
-                {
-                    data: "transaksi.keterangan",
-                    name: "transaksi.keterangan",
-                    orderable: true,
-                    searchable: true,
                 },
             ],
             drawCallback: function () {
@@ -143,65 +108,6 @@ export default function Index({ title, flash }) {
                 tooltips.forEach((tooltipNode) => {
                     new Tooltip(tooltipNode);
                 });
-            },
-            footerCallback: function (row, data, start, end, display) {
-                const api = this.api();
-
-                // Perbaikan fungsi parse
-                const parse = (val) => {
-                    if (typeof val === "string") {
-                        // Hapus semua titik sebagai pemisah ribuan
-                        // Ganti koma dengan titik untuk desimal
-                        let cleanNumber = val
-                            .replace(/\.00/g, "")
-                            .replace(",", ".");
-                        return parseFloat(cleanNumber) || 0;
-                    }
-                    return typeof val === "number" ? val : 0;
-                };
-
-                // Hitung total dengan menggunakan page.info()
-                const totalIR = api
-                    .column(4, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalSyiar = api
-                    .column(5, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalJumlah = api
-                    .column(6, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalDebit = api
-                    .column(7, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalKredit = api
-                    .column(8, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                // Tampilkan hasil dengan format yang benar
-                $(api.column(4).footer()).html(
-                    `Rp ${Math.round(totalIR).toLocaleString("id-ID")}`
-                );
-                $(api.column(5).footer()).html(
-                    `Rp ${Math.round(totalSyiar).toLocaleString("id-ID")}`
-                );
-                $(api.column(6).footer()).html(
-                    `Rp ${Math.round(totalJumlah).toLocaleString("id-ID")}`
-                );
-                $(api.column(7).footer()).html(
-                    `Rp ${Math.round(totalDebit).toLocaleString("id-ID")}`
-                );
-                $(api.column(8).footer()).html(
-                    `Rp ${Math.round(totalKredit).toLocaleString("id-ID")}`
-                );
             },
         });
 
@@ -251,11 +157,11 @@ export default function Index({ title, flash }) {
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-2 fw-bold">{title}</h5>
                                 <Link
-                                    href={route("admin.ir.create")}
+                                    href={route("admin.akun.create")}
                                     className="btn btn-primary mb-3"
                                 >
                                     <i className="bi bi-plus-circle me-2"></i>
-                                    Tambah Data IR
+                                    Tambah Akun Rekening
                                 </Link>
                             </div>
                             <div className="card-body">
@@ -265,38 +171,15 @@ export default function Index({ title, flash }) {
                                         className="table table-sm table-hover"
                                     >
                                         <thead>
-                                            <tr className="text-center">
+                                            <tr>
                                                 <th>No</th>
-                                                <th>AKSI</th>
-                                                <th>TANGGAL</th>
-                                                <th>NAMA</th>
-                                                <th>IR</th>
-                                                <th>SYIAR</th>
-                                                <th>JUMLAH</th>
-                                                <th>DEBIT</th>
-                                                <th>KREDIT</th>
-                                                <th>KETERANGAN</th>
+                                                <th>Aksi</th>
+                                                <th>NAMA AKUN</th>
+                                                <th>KODE AKUN</th>
+                                                <th>TIPE</th>
+                                                <th>SALDO AWAL</th>
                                             </tr>
                                         </thead>
-                                        <tfoot>
-                                            <tr className="text-center">
-                                                <th
-                                                    colSpan="4"
-                                                    style={{
-                                                        textAlign: "right",
-                                                        paddingRight: "40px",
-                                                    }}
-                                                >
-                                                    Total:
-                                                </th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                 </div>
                             </div>

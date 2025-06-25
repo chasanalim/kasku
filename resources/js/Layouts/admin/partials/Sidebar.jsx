@@ -19,9 +19,8 @@ export default function Sidebar() {
     // Check if any submenu is active
     const isAnySubmenuPemasukanActive = () => {
         return (
-            route().current("admin.jamaah.index") ||
-            route().current("admin.jamaah.index") ||
-            route().current("admin.jamaah.index")
+            route().current("admin.shodaqah.index") ||
+            route().current("admin.infaq.index") 
         );
     };
     const isAnySubmenuPengeluaranActive = () => {
@@ -35,7 +34,7 @@ export default function Sidebar() {
         return (
             route().current("admin.jamaah.index") ||
             route().current("admin.jamaah.index") ||
-            route().current("admin.jamaah.index")
+            route().current("admin.laporan.rekap-shodaqah")
         );
     };
     const isAnySubmenuQurbanActive = () => {
@@ -132,58 +131,39 @@ export default function Sidebar() {
                                                 as={Link}
                                                 method="get"
                                                 href={route(
-                                                    "admin.ir.index"
+                                                    "admin.shodaqah.index"
                                                 )}
                                                 active={route().current(
-                                                    "admin.ir.index"
+                                                    "admin.shodaqah.index"
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.ir.index"
+                                                        "admin.shodaqah.index"
                                                     )
                                                         ? "active"
                                                         : ""
                                                 }`}
                                             >
-                                                <span>IR</span>
+                                                <span>SHODAQAH</span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}
                                                 method="get"
                                                 href={route(
-                                                    "admin.jamaah.index"
+                                                    "admin.infaq.index"
                                                 )}
                                                 active={route().current(
-                                                    "admin.jamaah.index"
+                                                    "admin.infaq.index"
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.jamaah.index"
+                                                        "admin.infaq.index"
                                                     )
                                                         ? "active"
                                                         : ""
                                                 }`}
                                             >
-                                                <span>INFAQ</span>
-                                            </NavDropdown.Item>
-                                            <NavDropdown.Item
-                                                as={Link}
-                                                method="get"
-                                                href={route(
-                                                    "admin.jamaah.index"
-                                                )}
-                                                active={route().current(
-                                                    "admin.jamaah.index"
-                                                )}
-                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                                    route().current(
-                                                        "admin.jamaah.index"
-                                                    )
-                                                        ? "active"
-                                                        : ""
-                                                }`}
-                                            >
-                                                <span>KAS KELOMPOK</span>
+                                                <span>INFAQ RUTIN</span>
                                             </NavDropdown.Item>
                                         </NavDropdown>
                                     </Nav>
@@ -241,7 +221,26 @@ export default function Sidebar() {
                                                         : ""
                                                 }`}
                                             >
-                                                <span>PEMBAYARAN RUTIN</span>
+                                                <span>PEMBAYARAN LISRIK</span>
+                                            </NavDropdown.Item>
+                                            <NavDropdown.Item
+                                                as={Link}
+                                                method="get"
+                                                href={route(
+                                                    "admin.jamaah.index"
+                                                )}
+                                                active={route().current(
+                                                    "admin.jamaah.index"
+                                                )}
+                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                    route().current(
+                                                        "admin.jamaah.index"
+                                                    )
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <span>PEMBAYARAN KONSUMSI</span>
                                             </NavDropdown.Item>
                                         </NavDropdown>
                                     </Nav>
@@ -317,6 +316,25 @@ export default function Sidebar() {
                                                 }`}
                                             >
                                                 <span>LAPORAN KEUANGAN</span>
+                                            </NavDropdown.Item>
+                                            <NavDropdown.Item
+                                                as={Link}
+                                                method="get"
+                                                href={route(
+                                                    "admin.laporan.rekap-shodaqah"
+                                                )}
+                                                active={route().current(
+                                                    "admin.laporan.rekap-shodaqah"
+                                                )}
+                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                    route().current(
+                                                        "admin.laporan.rekap-shodaqah"
+                                                    )
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <span>REKAP SHODAQAH</span>
                                             </NavDropdown.Item>
                                         </NavDropdown>
                                     </Nav>

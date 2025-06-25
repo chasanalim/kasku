@@ -27,7 +27,7 @@ class HandleInertiaRequests extends Middleware
         return parent::version($request);
     }
 
-    
+
 
     /**
      * Define the props that are shared by default.
@@ -62,9 +62,25 @@ class HandleInertiaRequests extends Middleware
             ],
             'can' => $request->user() ? [
                 'viewPemasukan' => $request->user()->can('view-pemasukan'),
+                'createPemasukan' => $request->user()->can('add-pemasukan'),
+                'editPemasukan' => $request->user()->can('edit-pemasukan'),
+                'deletePemasukan' => $request->user()->can('delete-pemasukan'),
+
                 'viewPengeluaran' => $request->user()->can('view-pengeluaran'),
+                'createPengeluaran' => $request->user()->can('add-pengeluaram\n'),
+                'editPengeluaran' => $request->user()->can('edit-pengeluaram\n'),
+                'deletePengeluaran' => $request->user()->can('delete-pengeluaram\n'),
+
                 'viewLaporan' => $request->user()->can('view-laporan'),
+                'createLaporan' => $request->user()->can('add-laporan'),
+                'editLaporan' => $request->user()->can('adit-laporan'),
+                'deleteLaporan' => $request->user()->can('delete-laporan'),
+
                 'viewQurban' => $request->user()->can('view-qurban'),
+                'createQurban' => $request->user()->can('add-qurban'),
+                'editQurban' => $request->user()->can('edit-qurban'),
+                'deleteQurban' => $request->user()->can('delete-qurban'),
+
                 'viewDashboard' => $request->user()->can('view-dashboard'),
 
                 'viewMaster' => $request->user()->can('view-master'),

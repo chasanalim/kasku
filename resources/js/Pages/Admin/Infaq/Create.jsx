@@ -5,27 +5,55 @@ import { Form } from "react-bootstrap";
 
 export default function Create({
     title,
-    transaksi,
-    detailTransaksi,
+    shodaqah,
     jamaah,
     action,
     method = "POST",
 }) {
     const { data, setData, post, put, processing, errors, progress } = useForm({
-        tanggal: transaksi?.tanggal || "",
-        jamaah_id: detailTransaksi?.jamaah_id || "",
-        ir: detailTransaksi?.ir || "",
-        syiar: detailTransaksi?.syiar || "",
-        jumlah: detailTransaksi?.jumlah || "",
-        keterangan: transaksi?.keterangan || "",
+        tanggal: shodaqah?.transaksi?.tanggal || "",
+        jamaah_id: shodaqah?.jamaah_id || "",
+        kategori: "",
+        persenan: shodaqah?.persenan || "",
+        jimpitan: shodaqah?.jimpitan || "",
+        dapur_pusat: shodaqah?.dapur_pusat || "",
+        shodaqah_daerah: shodaqah?.shodaqah_daerah || "",
+        shodaqah_kelompok: shodaqah?.shodaqah_kelompok || "",
+        jumlah: shodaqah?.jumlah || "",
     });
 
-     useEffect(() => {
-        const ir = parseInt(data.ir) || 0;
-        const syiar = parseInt(data.syiar) || 0;
-        setData("jumlah", ir + syiar);
-    }, [data.ir, data.syiar]);
+    useEffect(() => {
+        const persenan = parseInt(data.persenan) || 0;
+        const jimpitan = parseInt(data.jimpitan) || 0;
+        const dapur_pusat = parseInt(data.dapur_pusat) || 0;
+        const shodaqah_daerah = parseInt(data.shodaqah_daerah) || 0;
+        const shodaqah_kelompok = parseInt(data.shodaqah_kelompok) || 0;
+        setData(
+            "jumlah",
+            persenan +
+                jimpitan +
+                dapur_pusat +
+                shodaqah_daerah +
+                shodaqah_kelompok
+        );
+    }, [
+        data.persenan,
+        data.jimpitan,
+        data.dapur_pusat,
+        data.shodaqah_daerah,
+        data.shodaqah_kelompok,
+    ]);
 
+    useEffect(() => {
+        if (data.jamaah_id) {
+            const selectedJamaah = jamaah.find(
+                (item) => item.id === parseInt(data.jamaah_id)
+            );
+            if (selectedJamaah) {
+                setData("kategori", selectedJamaah.kategori);
+            }
+        }
+    }, [data.jamaah_id]);
     const handleSubmit = (e) => {
         e.preventDefault();
         if (method === "PUT") {
@@ -109,52 +137,136 @@ export default function Create({
                                                         {errors.jamaah_id}
                                                     </div>
                                                 )}
+                                                <input
+                                                    type="hidden"
+                                                    name="kategori"
+                                                    value={data.kategori}
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-md-3">
                                             <Form.Group className="mb-3">
                                                 <Form.Label className="required">
-                                                    IR
+                                                    Persenan
                                                 </Form.Label>
                                                 <Form.Control
                                                     type="number"
-                                                    value={data.ir}
+                                                    value={data.persenan}
                                                     onChange={(e) =>
                                                         setData(
-                                                            "ir",
+                                                            "persenan",
                                                             e.target.value
                                                         )
                                                     }
-                                                    isInvalid={!!errors.ir}
-                                                    placeholder="Masukkan Nominal IR"
+                                                    isInvalid={
+                                                        !!errors.persenan
+                                                    }
+                                                    placeholder="Masukkan Nominal Persenan"
                                                 />
                                                 <Form.Control.Feedback type="invalid">
-                                                    {errors.ir}
+                                                    {errors.persenan}
                                                 </Form.Control.Feedback>
                                             </Form.Group>
                                         </div>
                                         <div className="col-md-3">
                                             <Form.Group className="mb-3">
                                                 <Form.Label className="required">
-                                                    Syiar - syiar
+                                                    Dapur Pusat
                                                 </Form.Label>
                                                 <Form.Control
                                                     type="number"
-                                                    value={data.syiar}
+                                                    value={data.dapur_pusat}
                                                     onChange={(e) =>
                                                         setData(
-                                                            "syiar",
+                                                            "dapur_pusat",
                                                             e.target.value
                                                         )
                                                     }
-                                                    isInvalid={!!errors.syiar}
-                                                    placeholder="Masukkan Nominal Syiar"
+                                                    isInvalid={
+                                                        !!errors.dapur_pusat
+                                                    }
+                                                    placeholder="Masukkan Nominal Dapur Pusat"
                                                 />
                                                 <Form.Control.Feedback type="invalid">
-                                                    {errors.syiar}
+                                                    {errors.dapur_pusat}
                                                 </Form.Control.Feedback>
                                             </Form.Group>
                                         </div>
+                                        <div className="col-md-3">
+                                            <Form.Group className="mb-3">
+                                                <Form.Label className="required">
+                                                    Shodaqah Daerah
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    value={data.shodaqah_daerah}
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            "shodaqah_daerah",
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    isInvalid={
+                                                        !!errors.shodaqah_daerah
+                                                    }
+                                                    placeholder="Masukkan Nominal Shodaqah Daerah"
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors.shodaqah_daerah}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+                                        </div>
+                                        <div className="col-md-3">
+                                            <Form.Group className="mb-3">
+                                                <Form.Label className="required">
+                                                    Shodaqah Kelompok
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    value={
+                                                        data.shodaqah_kelompok
+                                                    }
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            "shodaqah_kelompok",
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    isInvalid={
+                                                        !!errors.shodaqah_kelompok
+                                                    }
+                                                    placeholder="Masukkan Nominal Shodaqah Kelompok"
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors.shodaqah_kelompok}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+                                        </div>
+                                        <div className="col-md-3">
+                                            <Form.Group className="mb-3">
+                                                <Form.Label className="required">
+                                                    Jimpitan
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    value={data.jimpitan}
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            "jimpitan",
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    isInvalid={
+                                                        !!errors.jimpitan
+                                                    }
+                                                    placeholder="Masukkan Nominal Jimpitan"
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors.jimpitan}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+                                        </div>
+
                                         <div className="col-md-3">
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Jumlah</Form.Label>
@@ -173,30 +285,6 @@ export default function Create({
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.jumlah}
-                                                </Form.Control.Feedback>
-                                            </Form.Group>
-                                        </div>
-                                        <div className="col-md-9">
-                                            <Form.Group className="mb-3">
-                                                <Form.Label className="required">
-                                                    Keterangan Transaksi
-                                                </Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    value={data.keterangan}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "keterangan",
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    isInvalid={
-                                                        !!errors.keterangan
-                                                    }
-                                                    placeholder="Masukkan Keterangan Transaksi"
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors.keterangan}
                                                 </Form.Control.Feedback>
                                             </Form.Group>
                                         </div>
