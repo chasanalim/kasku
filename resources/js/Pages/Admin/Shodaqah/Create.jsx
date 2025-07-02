@@ -10,8 +10,10 @@ export default function Create({
     action,
     method = "POST",
 }) {
+
+    const today = new Date().toISOString().slice(0, 10);
     const { data, setData, post, put, processing, errors, progress } = useForm({
-        tanggal: shodaqah?.transaksi?.tanggal || "",
+        tanggal: shodaqah?.transaksi?.tanggal || today,
         jamaah_id: shodaqah?.jamaah_id || "",
         kategori: "",
         persenan: shodaqah?.persenan || "",

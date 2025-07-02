@@ -53,7 +53,7 @@ export default function Index({ title, flash, infaq, can }) {
         if (!confirm("Yakin ingin memverifikasi data terpilih?")) return;
 
         router.post(
-            route("admin.infaq.verify-multiple"),
+            route("admin.pengeluaran.verify-multiple"),
             {
                 ids: selectedIds,
             },
@@ -71,7 +71,7 @@ export default function Index({ title, flash, infaq, can }) {
 
         if (!confirm("Yakin ingin menghapus data terpilih?")) return;
 
-        router.delete(route("admin.infaq.destroy-multiple"), {
+        router.delete(route("admin.pengeluaran.destroy-multiple"), {
             data: { ids: selectedIds },
             onSuccess: () => {
                 setSelectedIds([]);
@@ -91,7 +91,7 @@ export default function Index({ title, flash, infaq, can }) {
                 [100, 500, "All"],
             ],
             ajax: {
-                url: route("admin.infaq.index"),
+                url: route("admin.pengeluaran.index"),
                 type: "GET",
                 data: (d) => {
                     if (tanggalAwal && tanggalAkhir) {
@@ -340,11 +340,11 @@ export default function Index({ title, flash, infaq, can }) {
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-2 fw-bold">{title}</h5>
                                 <Link
-                                    href={route("admin.infaq.create")}
+                                    href={route("admin.pengeluaran.create")}
                                     className="btn btn-sm btn-primary mb-3 "
                                 >
                                     <i className="bi bi-plus-circle me-2"></i>
-                                    Tambah Infaq
+                                    Tambah Pengeluaran Kas
                                 </Link>
                             </div>
                             <div className="card-body">

@@ -7,7 +7,9 @@ use App\Http\Controllers\Admin\AkunController;
 use App\Http\Controllers\Admin\InfaqController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\JamaahController;
+use App\Http\Controllers\Admin\KasKelompokController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\PengeluaranController;
 use App\Http\Controllers\Admin\ShodaqahController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\UserAdminController;
@@ -33,7 +35,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::post('shodaqah/verify/{id}', [ShodaqahController::class, 'verify'])->name('shodaqah.verify');
     Route::post('shodaqah/verify-multiple', [ShodaqahController::class, 'verifyMultiple'])->name('shodaqah.verify-multiple');
     Route::delete('shodaqah/destroy-multiple', [ShodaqahController::class, 'destroyMultiple'])->name('shodaqah.destroy-multiple');
-    
+
     Route::resource('infaq', InfaqController::class);
     Route::post('infaq/verify/{id}', [InfaqController::class, 'verify'])->name('infaq.verify');
     Route::post('infaq/verify-multiple', [InfaqController::class, 'verifyMultiple'])->name('infaq.verify-multiple');
@@ -42,7 +44,15 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
 
     Route::get('rekap-shodaqah', [LaporanController::class, 'rekapShodaqah'])->name('laporan.rekap-shodaqah');
 
+    Route::resource('pengeluaran', PengeluaranController::class);
+    Route::post('pengeluaran/verify/{id}', [PengeluaranController::class, 'verify'])->name('pengeluaran.verify');
+    Route::post('pengeluaran/verify-multiple', [PengeluaranController::class, 'verifyMultiple'])->name('pengeluaran.verify-multiple');
+    Route::delete('pengeluaran/destroy-multiple', [PengeluaranController::class, 'destroyMultiple'])->name('pengeluaran.destroy-multiple');
 
+    Route::resource('kaskelompok', KasKelompokController::class);
+    Route::post('kaskelompok/verify/{id}', [KasKelompokController::class, 'verify'])->name('kaskelompok.verify');
+    Route::post('kaskelompok/verify-multiple', [KasKelompokController::class, 'verifyMultiple'])->name('kaskelompok.verify-multiple');
+    Route::delete('kaskelompok/destroy-multiple', [KasKelompokController::class, 'destroyMultiple'])->name('kaskelompok.destroy-multiple');
 
     Route::get('shodaqah/export/pdf', [ExportController::class, 'exportPDF'])->name('shodaqah.export.pdf');
     Route::get('shodaqah/export/excel', [ExportController::class, 'exportExcel'])->name('shodaqah.export.excel');

@@ -342,6 +342,9 @@ class ShodaqahController extends Controller
         $shodaqah = DetailTransaksi::findOrFail($id);
         $shodaqah->delete();
 
+        $transaksi = Transaksi::find($shodaqah->transaksi_id);
+        $transaksi->delete();
+
         return redirect()->route('admin.shodaqah.index')->with('message', 'Data Shodaqah Jamaah berhasil dihapus');
     }
 

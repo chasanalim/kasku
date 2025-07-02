@@ -6,6 +6,7 @@ import { Form } from "react-bootstrap";
 export default function Create({
     title,
     infaq,
+    akun,
     action,
     method = "POST",
 }) {
@@ -63,9 +64,50 @@ export default function Create({
                                                 </Form.Control.Feedback>
                                             </Form.Group>
                                         </div>
-
-
-                                        <div className="col-md-3">
+                                        <div className="col-md-2">
+                                            <div className="mb-3">
+                                                <label className="form-label required">
+                                                    Nama Kas
+                                                </label>
+                                                <select
+                                                    className={`form-select ${
+                                                        errors.akun_id
+                                                            ? "is-invalid"
+                                                            : ""
+                                                    }`}
+                                                    value={data.akun_id}
+                                                    onChange={(e) =>
+                                                        setData(
+                                                            "akun_id",
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                >
+                                                    <option value="">
+                                                        Pilih Kas
+                                                    </option>
+                                                    {akun.map((item) => (
+                                                        <option
+                                                            key={item.id}
+                                                            value={item.id}
+                                                        >
+                                                            {item.nama}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                {errors.akun_id && (
+                                                    <div className="invalid-feedback">
+                                                        {errors.akun_id}
+                                                    </div>
+                                                )}
+                                                <input
+                                                    type="hidden"
+                                                    name="kategori"
+                                                    value={data.kategori}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-2">
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Jumlah</Form.Label>
                                                 <Form.Control
@@ -85,7 +127,7 @@ export default function Create({
                                                 </Form.Control.Feedback>
                                             </Form.Group>
                                         </div>
-                                        <div className="col-md-6">
+                                        <div className="col-md-5">
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Keterangan</Form.Label>
                                                 <Form.Control

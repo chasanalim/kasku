@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('akun_id')->constrained('akun_rekening')->onDelete('cascade');
             $table->date('tanggal');
             $table->string('keterangan');
-            $table->enum('jenis', ['pemasukan', 'pengeluaran']);
+            $table->enum('jenis', ['pemasukan', 'pengeluaran','pemasukan_kas', 'pengeluaran_kas']);
             $table->timestamps();
         });
     }

@@ -12,7 +12,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
-class InfaqController extends Controller
+class PengeluaranController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,18 +21,18 @@ class InfaqController extends Controller
     {
         $infaq = DetailTransaksi::with(['transaksi', 'transaksi.akun'])
             ->whereHas('transaksi', function ($query) {
-                $query->where('jenis', 'pemasukan_kas')
-                    ->where('akun_id', 1);
+                $query->where('jenis', 'pengeluaran');
             })
             ->orderBy('id', 'desc')
             ->get();
+
+
         // return response()->json($infaq);
 
         if ($request->wantsJson()) {
             $data = DetailTransaksi::with(['transaksi', 'transaksi.akun'])
                 ->whereHas('transaksi', function ($query) {
-                    $query->where('jenis', 'pemasukan_kas')
-                        ->where('akun_id', 1);
+                    $query->where('jenis', 'pengeluaran');
                 })
                 ->orderBy('id', 'desc')
                 ->whereHas('transaksi', function ($query) use ($request) {
@@ -48,21 +48,22 @@ class InfaqController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return [
-                        'verify_url' => route('admin.infaq.verify', $row->id),
-                        'edit_url' => route('admin.infaq.edit', $row->id),
-                        'delete_url' => route('admin.infaq.destroy', $row->id)
+                        'verify_url' => route('admin.pengeluaran.verify', $row->id),
+                        'edit_url' => route('admin.pengeluaran.edit', $row->id),
+                        'delete_url' => route('admin.pengeluaran.destroy', $row->id)
                     ];
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        return Inertia::render('Admin/Infaq/Index', [
-            'title' => 'Data Infaq Kelompok',
+        return Inertia::render('Admin/Pengeluaran/Index', [
+            'title' => 'Data Pengeluaran Kas',
             'flash' => [
                 'message' => session('message')
             ],
-            'infaq' => $infaq,
+            'infaq' => $infaq
+
         ]);
     }
 
@@ -71,11 +72,12 @@ class InfaqController extends Controller
      */
     public function create()
     {
-        $jamaah = Jamaah::all();
-        return Inertia::render('Admin/Infaq/Create', [
-            'title' => 'Tambah InfaqJamaah',
-            'action' => route('admin.infaq.store'),
+        $akun = AkunRekening::where('tipe', 'kas')->get();
+        return Inertia::render('Admin/Pengeluaran/Create', [
+            'title' => 'Tambah Pengeluaran Kas',
+            'action' => route('admin.pengeluaran.store'),
             'method' => 'POST',
+            'akun' => $akun
         ]);
     }
 
@@ -94,13 +96,13 @@ class InfaqController extends Controller
 
         DB::transaction(function () use ($request) {
             if ($request->jumlah > 0) {
-                $akun = AkunRekening::where('kode_akun', '101')->first();
-                $akun->increment('saldo_awal', $request->jumlah);
+                $akun = AkunRekening::where('id',$request->akun_id)->first();
+                $akun->decrement('saldo_awal', $request->jumlah);
                 $transaksi = Transaksi::create([
                     'tanggal' => $request->tanggal,
                     'akun_id' => $akun->id,
                     'keterangan' => $request->keterangan,
-                    'jenis' => 'pemasukan_kas'
+                    'jenis' => 'pengeluaran'
                 ]);
                 DetailTransaksi::create([
                     'transaksi_id' => $transaksi->id,
@@ -110,8 +112,8 @@ class InfaqController extends Controller
 
         });
 
-        return redirect()->route('admin.infaq.index')
-            ->with('message', 'Data Infaq berhasil ditambahkan');
+        return redirect()->route('admin.pengeluaran.index')
+            ->with('message', 'Data Pengeluaran berhasil ditambahkan');
     }
 
     /**
@@ -127,16 +129,18 @@ class InfaqController extends Controller
      */
     public function edit(string $id)
     {
+        $akun = AkunRekening::where('tipe', 'kas')->get();
         $infaq = DetailTransaksi::with(['transaksi'])
             ->whereHas('transaksi', function ($query) {
                 $query->where('jenis', 'pemasukan_kas');
             })
             ->findOrFail($id);
-        // return response()->json($infaq);
-        return Inertia::render('Admin/Infaq/Create', [
-            'title' => 'Edit Infaq Jamaah',
+        // return response()->json($shodaqah);
+        return Inertia::render('Admin/Pengeluaran/Create', [
+            'title' => 'Edit Pengeluaran',
             'infaq' => $infaq,
-            'action' => route('admin.infaq.update', $infaq->id),
+            'akun' => $akun,
+            'action' => route('admin.pengeluaran.update', $infaq->id),
             'method' => 'PUT',
         ]);
     }
@@ -192,11 +196,10 @@ class InfaqController extends Controller
     {
         $shodaqah = DetailTransaksi::findOrFail($id);
         $shodaqah->delete();
-
         $transaksi = Transaksi::find($shodaqah->transaksi_id);
         $transaksi->delete();
 
-        return redirect()->route('admin.infaq.index')->with('message', 'Data Infaq berhasil dihapus');
+        return redirect()->route('admin.pengeluaran.index')->with('message', 'Data Pengeluaran berhasil dihapus');
     }
 
     public function verify(string $id)
@@ -204,7 +207,7 @@ class InfaqController extends Controller
         $shodaqah = DetailTransaksi::findOrFail($id);
         $shodaqah->update(['status' => 1]);
 
-        return redirect()->route('admin.infaq.index')->with('message', 'Data infaq Jamaah berhasil diverifikasi');
+        return redirect()->route('admin.pengeluaran.index')->with('message', 'Data pengeluaran Jamaah berhasil diverifikasi');
     }
 
     public function verifyMultiple(Request $request)
@@ -218,7 +221,7 @@ class InfaqController extends Controller
         try {
             DetailTransaksi::whereIn('id', $request->ids)->update(['status' => 1]);
             DB::commit();
-            return redirect()->route('admin.infaq.index')->with('message', 'Data Infaq Jamaah berhasil diverifikasi');
+            return redirect()->route('admin.pengeluaran.index')->with('message', 'Data pengeluaran Jamaah berhasil diverifikasi');
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Gagal memverifikasi data'], 500);
@@ -236,7 +239,7 @@ class InfaqController extends Controller
         try {
             DetailTransaksi::whereIn('id', $request->ids)->delete();
             DB::commit();
-            return redirect()->route('admin.infaq.index')->with('message', 'Data Infaq Jamaah berhasil dihapus');
+            return redirect()->route('admin.pengeluaran.index')->with('message', 'Data pengeluaran Jamaah berhasil dihapus');
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Gagal menghapus data'], 500);

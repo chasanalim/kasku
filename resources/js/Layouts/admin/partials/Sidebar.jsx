@@ -20,26 +20,23 @@ export default function Sidebar() {
     const isAnySubmenuPemasukanActive = () => {
         return (
             route().current("admin.shodaqah.index") ||
-            route().current("admin.infaq.index") 
+            route().current("admin.infaq.index")
         );
     };
     const isAnySubmenuPengeluaranActive = () => {
         return (
-            route().current("admin.jamaah.index") ||
-            route().current("admin.jamaah.index") ||
-            route().current("admin.jamaah.index")
+            route().current("admin.pengeluaran.index") ||
+            route().current("admin.kaskelompok.index")
         );
     };
     const isAnySubmenuLaporanActive = () => {
         return (
-            route().current("admin.jamaah.index") ||
             route().current("admin.jamaah.index") ||
             route().current("admin.laporan.rekap-shodaqah")
         );
     };
     const isAnySubmenuQurbanActive = () => {
         return (
-            route().current("admin.jamaah.index") ||
             route().current("admin.jamaah.index") ||
             route().current("admin.jamaah.index")
         );
@@ -208,39 +205,39 @@ export default function Sidebar() {
                                                 as={Link}
                                                 method="get"
                                                 href={route(
-                                                    "admin.jamaah.index"
+                                                    "admin.kaskelompok.index"
                                                 )}
                                                 active={route().current(
-                                                    "admin.jamaah.index"
+                                                    "admin.kaskelompok.index"
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.jamaah.index"
+                                                        "admin.kaskelompok.index"
                                                     )
                                                         ? "active"
                                                         : ""
                                                 }`}
                                             >
-                                                <span>PEMBAYARAN LISRIK</span>
+                                                <span>PENGELUARAN KELOMPOK</span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}
                                                 method="get"
                                                 href={route(
-                                                    "admin.jamaah.index"
+                                                    "admin.pengeluaran.index"
                                                 )}
                                                 active={route().current(
-                                                    "admin.jamaah.index"
+                                                    "admin.pengeluaran.index"
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.jamaah.index"
+                                                        "admin.pengeluaran.index"
                                                     )
                                                         ? "active"
                                                         : ""
                                                 }`}
                                             >
-                                                <span>PEMBAYARAN KONSUMSI</span>
+                                                <span>PENGELUARAN KAS</span>
                                             </NavDropdown.Item>
                                         </NavDropdown>
                                     </Nav>
