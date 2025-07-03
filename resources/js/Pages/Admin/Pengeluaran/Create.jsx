@@ -91,7 +91,13 @@ export default function Create({
                                                             key={item.id}
                                                             value={item.id}
                                                         >
-                                                            {item.nama}
+                                                            {item.nama} | Rp
+                                                            {Number(
+                                                                item.saldo_awal ||
+                                                                    0
+                                                            ).toLocaleString(
+                                                                "id-ID"
+                                                            )}
                                                         </option>
                                                     ))}
                                                 </select>
@@ -129,7 +135,9 @@ export default function Create({
                                         </div>
                                         <div className="col-md-5">
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Keterangan</Form.Label>
+                                                <Form.Label>
+                                                    Keterangan
+                                                </Form.Label>
                                                 <Form.Control
                                                     type="text"
                                                     value={data.keterangan}
@@ -139,7 +147,9 @@ export default function Create({
                                                             e.target.value
                                                         )
                                                     }
-                                                    isInvalid={!!errors.keterangan}
+                                                    isInvalid={
+                                                        !!errors.keterangan
+                                                    }
                                                     placeholder="Masukkan keterangan"
                                                 />
                                                 <Form.Control.Feedback type="invalid">

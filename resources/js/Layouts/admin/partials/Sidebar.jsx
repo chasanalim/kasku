@@ -31,7 +31,7 @@ export default function Sidebar() {
     };
     const isAnySubmenuLaporanActive = () => {
         return (
-            route().current("admin.jamaah.index") ||
+            route().current("admin.laporan") ||
             route().current("admin.laporan.rekap-shodaqah")
         );
     };
@@ -299,7 +299,7 @@ export default function Sidebar() {
                                                 as={Link}
                                                 method="get"
                                                 href={route(
-                                                    "admin.jamaah.index"
+                                                    "admin.laporan"
                                                 )}
                                                 active={route().current(
                                                     "admin.jamaah.index"

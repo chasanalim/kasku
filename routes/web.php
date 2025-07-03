@@ -43,6 +43,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('laporan', LaporanController::class);
 
     Route::get('rekap-shodaqah', [LaporanController::class, 'rekapShodaqah'])->name('laporan.rekap-shodaqah');
+    Route::get('laporan', [LaporanController::class, 'laporan'])->name('laporan');
 
     Route::resource('pengeluaran', PengeluaranController::class);
     Route::post('pengeluaran/verify/{id}', [PengeluaranController::class, 'verify'])->name('pengeluaran.verify');
