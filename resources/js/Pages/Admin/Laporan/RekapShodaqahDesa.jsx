@@ -41,7 +41,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
     };
 
     const handleExport = (type) => {
-        const url = route(`admin.shodaqah.export.${type}`, {
+        const url = route(`admin.shodaqah-desa.export.${type}`, {
             tanggal_awal: tanggalAwal,
             tanggal_akhir: tanggalAkhir,
         });
@@ -59,7 +59,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                 [100, 500, "All"],
             ],
             ajax: {
-                url: route("admin.laporan.rekap-shodaqah"),
+                url: route("admin.laporan.rekap-shodaqah-desa"),
                 type: "GET",
                 data: (d) => {
                     if (tanggalAwal && tanggalAkhir) {
@@ -122,8 +122,8 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     },
                 },
                 {
-                    data: "shodaqah_daerah",
-                    name: "shodaqah_daerah",
+                    data: "kk",
+                    name: "kk",
                     className: "text-center",
                     orderable: true,
                     searchable: true,
@@ -132,8 +132,18 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     },
                 },
                 {
-                    data: "shodaqah_kelompok",
-                    name: "shodaqah_kelompok",
+                    data: "ppg",
+                    name: "ppg",
+                    className: "text-center",
+                    orderable: true,
+                    searchable: true,
+                    render: function (data) {
+                        return parseInt(data).toLocaleString("id-ID");
+                    },
+                },
+                {
+                    data: "zakat",
+                    name: "zakat",
                     className: "text-center",
                     orderable: true,
                     searchable: true,
@@ -365,8 +375,9 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                                                 <th>PERSENAN</th>
                                                 <th>JIMPITAN</th>
                                                 <th>DAPUR PUSAT</th>
-                                                <th>SHODAQAH DAERAH</th>
-                                                <th>SHODAQAH KELOMPOK</th>
+                                                <th>KK</th>
+                                                <th>PPG</th>
+                                                <th>ZAKAT</th>
                                                 <th>JUMLAH</th>
                                             </tr>
                                         </thead>
@@ -381,6 +392,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                                                 >
                                                     Total:
                                                 </th>
+                                                <th></th>
                                                 <th></th>
                                                 <th></th>
                                                 <th></th>

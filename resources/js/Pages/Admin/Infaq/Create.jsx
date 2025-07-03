@@ -1,20 +1,28 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, useForm } from "@inertiajs/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 
-export default function Create({
-    title,
-    infaq,
-    action,
-    method = "POST",
-}) {
+export default function Create({ title, infaq, action, method = "POST" }) {
     const today = new Date().toISOString().slice(0, 10);
     const { data, setData, post, put, processing, errors, progress } = useForm({
         tanggal: infaq?.transaksi?.tanggal || today,
         jumlah: infaq?.jumlah || "",
         keterangan: infaq?.transaksi?.keterangan || "",
     });
+
+    // Tambahkan state untuk tampilan jumlah terformat
+    const [formattedJumlah, setFormattedJumlah] = useState(
+        data.jumlah ? Number(data.jumlah).toLocaleString("id-ID") : ""
+    );
+
+    // Handler untuk input jumlah
+    const handleJumlahChange = (e) => {
+        // Hapus semua karakter selain angka
+        const raw = e.target.value.replace(/\D/g, "");
+        setData("jumlah", raw);
+        setFormattedJumlah(raw ? Number(raw).toLocaleString("id-ID") : "");
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -63,22 +71,19 @@ export default function Create({
                                                 </Form.Control.Feedback>
                                             </Form.Group>
                                         </div>
-
-
                                         <div className="col-md-3">
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Jumlah</Form.Label>
                                                 <Form.Control
-                                                    type="number"
-                                                    value={data.jumlah}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "jumlah",
-                                                            e.target.value
-                                                        )
+                                                    type="text"
+                                                    value={formattedJumlah}
+                                                    onChange={
+                                                        handleJumlahChange
                                                     }
                                                     isInvalid={!!errors.jumlah}
                                                     placeholder="Masukkan Jumlah"
+                                                    inputMode="numeric"
+                                                    autoComplete="off"
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.jumlah}
@@ -87,7 +92,9 @@ export default function Create({
                                         </div>
                                         <div className="col-md-6">
                                             <Form.Group className="mb-3">
-                                                <Form.Label>Keterangan</Form.Label>
+                                                <Form.Label>
+                                                    Keterangan
+                                                </Form.Label>
                                                 <Form.Control
                                                     type="text"
                                                     value={data.keterangan}
@@ -97,7 +104,9 @@ export default function Create({
                                                             e.target.value
                                                         )
                                                     }
-                                                    isInvalid={!!errors.keterangan}
+                                                    isInvalid={
+                                                        !!errors.keterangan
+                                                    }
                                                     placeholder="Masukkan keterangan"
                                                 />
                                                 <Form.Control.Feedback type="invalid">

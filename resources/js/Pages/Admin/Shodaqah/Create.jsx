@@ -1,6 +1,6 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, useForm } from "@inertiajs/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 
 export default function Create({
@@ -10,7 +10,6 @@ export default function Create({
     action,
     method = "POST",
 }) {
-
     const today = new Date().toISOString().slice(0, 10);
     const { data, setData, post, put, processing, errors, progress } = useForm({
         tanggal: shodaqah?.transaksi?.tanggal || today,
@@ -25,28 +24,6 @@ export default function Create({
     });
 
     useEffect(() => {
-        const persenan = parseInt(data.persenan) || 0;
-        const jimpitan = parseInt(data.jimpitan) || 0;
-        const dapur_pusat = parseInt(data.dapur_pusat) || 0;
-        const shodaqah_daerah = parseInt(data.shodaqah_daerah) || 0;
-        const shodaqah_kelompok = parseInt(data.shodaqah_kelompok) || 0;
-        setData(
-            "jumlah",
-            persenan +
-                jimpitan +
-                dapur_pusat +
-                shodaqah_daerah +
-                shodaqah_kelompok
-        );
-    }, [
-        data.persenan,
-        data.jimpitan,
-        data.dapur_pusat,
-        data.shodaqah_daerah,
-        data.shodaqah_kelompok,
-    ]);
-
-    useEffect(() => {
         if (data.jamaah_id) {
             const selectedJamaah = jamaah.find(
                 (item) => item.id === parseInt(data.jamaah_id)
@@ -56,6 +33,94 @@ export default function Create({
             }
         }
     }, [data.jamaah_id]);
+
+    // Tambahkan state untuk tampilan jumlah terformat
+    const [formattedJumlah, setFormattedJumlah] = useState(
+        data.jumlah ? Number(data.jumlah).toLocaleString("id-ID") : ""
+    );
+    const [formattedDapurPusat, setFormattedDapurPusat] = useState(
+        data.dapur_pusat ? Number(data.dapur_pusat).toLocaleString("id-ID") : ""
+    );
+    const [formattedJimpitan, setFormattedJimpitan] = useState(
+        data.jimpitan ? Number(data.jimpitan).toLocaleString("id-ID") : ""
+    );
+    const [formattedPersenan, setFormattedPersenan] = useState(
+        data.persenan ? Number(data.persenan).toLocaleString("id-ID") : ""
+    );
+    const [formattedShodaqahDaerah, setFormattedShodaqahDaerah] = useState(
+        data.shodaqah_daerah
+            ? Number(data.shodaqah_daerah).toLocaleString("id-ID")
+            : ""
+    );
+    const [formattedShodaqahKelompok, setFormattedShodaqahKelompok] = useState(
+        data.shodaqah_kelompok
+            ? Number(data.shodaqah_kelompok).toLocaleString("id-ID")
+            : ""
+    );
+
+    // Handler untuk input jumlah
+    const handlePersenanChange = (e) => {
+        // Hapus semua karakter selain angka
+        const raw = e.target.value.replace(/\D/g, "");
+        setData("persenan", raw);
+        setFormattedPersenan(raw ? Number(raw).toLocaleString("id-ID") : "");
+    };
+    const handleJimpitanChange = (e) => {
+        // Hapus semua karakter selain angka
+        const raw = e.target.value.replace(/\D/g, "");
+        setData("jimpitan", raw);
+        setFormattedJimpitan(raw ? Number(raw).toLocaleString("id-ID") : "");
+    };
+    const handleDapurPusatChange = (e) => {
+        // Hapus semua karakter selain angka
+        const raw = e.target.value.replace(/\D/g, "");
+        setData("dapur_pusat", raw);
+        setFormattedDapurPusat(raw ? Number(raw).toLocaleString("id-ID") : "");
+    };
+    const handleShodaqahDaerahChange = (e) => {
+        // Hapus semua karakter selain angka
+        const raw = e.target.value.replace(/\D/g, "");
+        setData("shodaqah_daerah", raw);
+        setFormattedShodaqahDaerah(
+            raw ? Number(raw).toLocaleString("id-ID") : ""
+        );
+    };
+    const handleShodaqahKelompokChange = (e) => {
+        // Hapus semua karakter selain angka
+        const raw = e.target.value.replace(/\D/g, "");
+        setData("shodaqah_kelompok", raw);
+        setFormattedShodaqahKelompok(
+            raw ? Number(raw).toLocaleString("id-ID") : ""
+        );
+    };
+    const handleJumlahChange = (e) => {
+        // Hapus semua karakter selain angka
+        const raw = e.target.value.replace(/\D/g, "");
+        setData("jumlah", raw);
+        setFormattedJumlah(raw ? Number(raw).toLocaleString("id-ID") : "");
+    };
+
+    useEffect(() => {
+        const persenan = parseInt(data.persenan) || 0;
+        const jimpitan = parseInt(data.jimpitan) || 0;
+        const dapur_pusat = parseInt(data.dapur_pusat) || 0;
+        const shodaqah_daerah = parseInt(data.shodaqah_daerah) || 0;
+        const shodaqah_kelompok = parseInt(data.shodaqah_kelompok) || 0;
+        const total =
+            persenan +
+            jimpitan +
+            dapur_pusat +
+            shodaqah_daerah +
+            shodaqah_kelompok;
+        setData("jumlah", total);
+        setFormattedJumlah(total ? total.toLocaleString("id-ID") : "");
+    }, [
+        data.persenan,
+        data.jimpitan,
+        data.dapur_pusat,
+        data.shodaqah_daerah,
+        data.shodaqah_kelompok,
+    ]);
     const handleSubmit = (e) => {
         e.preventDefault();
         if (method === "PUT") {
@@ -152,18 +217,17 @@ export default function Create({
                                                     Persenan
                                                 </Form.Label>
                                                 <Form.Control
-                                                    type="number"
-                                                    value={data.persenan}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "persenan",
-                                                            e.target.value
-                                                        )
+                                                    type="text"
+                                                    value={formattedPersenan}
+                                                    onChange={
+                                                        handlePersenanChange
                                                     }
                                                     isInvalid={
                                                         !!errors.persenan
                                                     }
-                                                    placeholder="Masukkan Nominal Persenan"
+                                                    placeholder="Masukkan Persenan"
+                                                    inputMode="numeric"
+                                                    autoComplete="off"
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.persenan}
@@ -173,21 +237,43 @@ export default function Create({
                                         <div className="col-md-3">
                                             <Form.Group className="mb-3">
                                                 <Form.Label className="required">
+                                                    Jimpitan
+                                                </Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    value={formattedJimpitan}
+                                                    onChange={
+                                                        handleJimpitanChange
+                                                    }
+                                                    isInvalid={
+                                                        !!errors.jimpitan
+                                                    }
+                                                    placeholder="Masukkan Jimpitan"
+                                                    inputMode="numeric"
+                                                    autoComplete="off"
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors.jimpitan}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+                                        </div>
+                                        <div className="col-md-3">
+                                            <Form.Group className="mb-3">
+                                                <Form.Label className="required">
                                                     Dapur Pusat
                                                 </Form.Label>
                                                 <Form.Control
-                                                    type="number"
-                                                    value={data.dapur_pusat}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "dapur_pusat",
-                                                            e.target.value
-                                                        )
+                                                    type="text"
+                                                    value={formattedDapurPusat}
+                                                    onChange={
+                                                        handleDapurPusatChange
                                                     }
                                                     isInvalid={
                                                         !!errors.dapur_pusat
                                                     }
-                                                    placeholder="Masukkan Nominal Dapur Pusat"
+                                                    placeholder="Masukkan Dapur Pusat"
+                                                    inputMode="numeric"
+                                                    autoComplete="off"
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.dapur_pusat}
@@ -200,18 +286,19 @@ export default function Create({
                                                     Shodaqah Daerah
                                                 </Form.Label>
                                                 <Form.Control
-                                                    type="number"
-                                                    value={data.shodaqah_daerah}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "shodaqah_daerah",
-                                                            e.target.value
-                                                        )
+                                                    type="text"
+                                                    value={
+                                                        formattedShodaqahDaerah
+                                                    }
+                                                    onChange={
+                                                        handleShodaqahDaerahChange
                                                     }
                                                     isInvalid={
                                                         !!errors.shodaqah_daerah
                                                     }
-                                                    placeholder="Masukkan Nominal Shodaqah Daerah"
+                                                    placeholder="Masukkan Jumlah"
+                                                    inputMode="numeric"
+                                                    autoComplete="off"
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.shodaqah_daerah}
@@ -224,47 +311,22 @@ export default function Create({
                                                     Shodaqah Kelompok
                                                 </Form.Label>
                                                 <Form.Control
-                                                    type="number"
+                                                    type="text"
                                                     value={
-                                                        data.shodaqah_kelompok
+                                                        formattedShodaqahKelompok
                                                     }
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "shodaqah_kelompok",
-                                                            e.target.value
-                                                        )
+                                                    onChange={
+                                                        handleShodaqahKelompokChange
                                                     }
                                                     isInvalid={
                                                         !!errors.shodaqah_kelompok
                                                     }
-                                                    placeholder="Masukkan Nominal Shodaqah Kelompok"
+                                                    placeholder="Masukkan Jumlah"
+                                                    inputMode="numeric"
+                                                    autoComplete="off"
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.shodaqah_kelompok}
-                                                </Form.Control.Feedback>
-                                            </Form.Group>
-                                        </div>
-                                        <div className="col-md-3">
-                                            <Form.Group className="mb-3">
-                                                <Form.Label className="required">
-                                                    Jimpitan
-                                                </Form.Label>
-                                                <Form.Control
-                                                    type="number"
-                                                    value={data.jimpitan}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "jimpitan",
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    isInvalid={
-                                                        !!errors.jimpitan
-                                                    }
-                                                    placeholder="Masukkan Nominal Jimpitan"
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors.jimpitan}
                                                 </Form.Control.Feedback>
                                             </Form.Group>
                                         </div>
@@ -273,17 +335,16 @@ export default function Create({
                                             <Form.Group className="mb-3">
                                                 <Form.Label>Jumlah</Form.Label>
                                                 <Form.Control
-                                                    type="number"
-                                                    value={data.jumlah}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "jumlah",
-                                                            e.target.value
-                                                        )
+                                                    type="text"
+                                                    value={formattedJumlah}
+                                                    onChange={
+                                                        handleJumlahChange
                                                     }
                                                     isInvalid={!!errors.jumlah}
-                                                    readOnly
                                                     placeholder="Masukkan Jumlah"
+                                                    inputMode="numeric"
+                                                    autoComplete="off"
+                                                    readOnly
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.jumlah}

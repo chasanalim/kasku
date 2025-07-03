@@ -8,9 +8,17 @@ import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-export default function RekapShodaqah({ title, flash, shodaqah, can }) {
+export default function Index({ title, flash, infaq, can }) {
     const tableRef = useRef();
-
+    const [selectedIds, setSelectedIds] = useState([]);
+    const verifyItem = (url) => {
+        router.post(url, {
+            onSuccess: () => {
+                $(tableRef.current).DataTable().ajax.reload();
+            },
+        });
+    };
+    window.verifyItem = verifyItem;
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 2)
         .toISOString()
@@ -39,13 +47,37 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
         setTanggalAkhir("");
         $(tableRef.current).DataTable().ajax.reload();
     };
+    const handleMultipleVerify = () => {
+        if (!selectedIds.length) return;
 
-    const handleExport = (type) => {
-        const url = route(`admin.shodaqah.export.${type}`, {
-            tanggal_awal: tanggalAwal,
-            tanggal_akhir: tanggalAkhir,
+        if (!confirm("Yakin ingin memverifikasi data terpilih?")) return;
+
+        router.post(
+            route("admin.pemasukan.verify-multiple"),
+            {
+                ids: selectedIds,
+            },
+            {
+                onSuccess: () => {
+                    setSelectedIds([]);
+                    $("#datatable").DataTable().ajax.reload();
+                },
+            }
+        );
+    };
+
+    const handleMultipleDelete = () => {
+        if (!selectedIds.length) return;
+
+        if (!confirm("Yakin ingin menghapus data terpilih?")) return;
+
+        router.delete(route("admin.pemasukan.destroy-multiple"), {
+            data: { ids: selectedIds },
+            onSuccess: () => {
+                setSelectedIds([]);
+                $("#datatable").DataTable().ajax.reload();
+            },
         });
-        window.open(url, '_blank');
     };
 
     useEffect(() => {
@@ -53,13 +85,13 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
             processing: true,
             serverSide: true,
             responsive: true,
-            pageLength: 100, // Default show 100 records
+            pageLength: 30, // Default show 100 records
             lengthMenu: [
                 [100, 500, -1],
                 [100, 500, "All"],
             ],
             ajax: {
-                url: route("admin.laporan.rekap-shodaqah"),
+                url: route("admin.pemasukan.index"),
                 type: "GET",
                 data: (d) => {
                     if (tanggalAwal && tanggalAkhir) {
@@ -73,73 +105,86 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
             },
             columns: [
                 {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center",
+                    render: function (data, type, row) {
+                        // Only show checkbox if status is not verified (1)
+                        if (row.status !== 1) {
+                            return `<input type="checkbox" class="form-check-input select-item" value="${row.id}">`;
+                        }
+                        return "";
+                    },
+                },
+                {
                     data: "DT_RowIndex",
                     name: "DT_RowIndex",
                     orderable: false,
                     searchable: false,
                     className: "text-center",
                 },
-
                 {
-                    data: "nama",
-                    name: "nama",
-                    orderable: true,
-                    searchable: true,
+                    data: "action",
+                    name: "action",
+                    orderable: false,
+                    searchable: false,
+                    width: "10%",
+                    className: "text-center",
                     render: function (data, type, row) {
-                        if (!row.tanggal) {
-                            return `<span style="color: red;">${data}</span>`;
+                        let buttons = [];
+                        if (row.status !== 1) {
+                            if (can.deletePemasukan) {
+                                buttons.push(`
+                                <a href="javascript:void(0)"
+                                   onclick="verifyItem('${data.verify_url}')"
+                                   class="btn btn-sm btn-primary"
+                                   title="Verifikasi">
+                                    <i class="bi bi-check-circle"></i>
+                                </a>
+                            `);
+                            }
+
+                            if (can.editPemasukan) {
+                                buttons.push(`
+                                <a href="${data.edit_url}" class="btn btn-sm btn-info" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            `);
+                            }
+
+                            if (can.deletePemasukan) {
+                                buttons.push(`
+                                <a href="javascript:void(0)"
+                                   onclick="deleteItem('${data.delete_url}')"
+                                   class="btn btn-sm btn-danger"
+                                   title="Hapus">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            `);
+                            }
+
+                            return `<div class="btn-group">${buttons.join(
+                                ""
+                            )}</div>`;
+                        } else {
+                            return `<span class="badge bg-success">Verified</span>`;
                         }
-                        return data;
                     },
                 },
                 {
-                    data: "persenan",
-                    name: "persenan",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
-                },
-                {
-                    data: "jimpitan",
-                    name: "jimpitan",
+                    data: "transaksi.tanggal",
+                    name: "transaksi.tanggal",
                     className: "text-center",
                     orderable: true,
                     searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
                 },
                 {
-                    data: "dapur_pusat",
-                    name: "dapur_pusat",
+                    data: "transaksi.akun.nama",
+                    name: "transaksi.akun.nama",
                     className: "text-center",
                     orderable: true,
                     searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
-                },
-                {
-                    data: "shodaqah_daerah",
-                    name: "shodaqah_daerah",
-                    className: "text-center",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
-                },
-                {
-                    data: "shodaqah_kelompok",
-                    name: "shodaqah_kelompok",
-                    className: "text-center",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
                 },
                 {
                     data: "jumlah",
@@ -152,12 +197,10 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     },
                 },
                 {
-                    data: "status_format",
-                    name: "status",
-                    title: "Status",
-                    className: "text-center",
-                    orderable: false,
-                    searchable: false,
+                    data: "transaksi.keterangan",
+                    name: "transaksi.keterangan",
+                    orderable: true,
+                    searchable: true,
                 },
             ],
             drawCallback: function () {
@@ -167,6 +210,23 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                 );
                 tooltips.forEach((tooltipNode) => {
                     new Tooltip(tooltipNode);
+                });
+                $(".select-all").prop("checked", false);
+                $(".select-item").prop("checked", false);
+
+                selectedIds.forEach((id) => {
+                    $(`.select-item[value="${id}"]`).prop("checked", true);
+                });
+                const totalCheckboxes = $(".select-item").length;
+                const checkedCheckboxes = $(".select-item:checked").length;
+                $(".select-all").prop(
+                    "checked",
+                    totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes
+                );
+
+                // Update individual checkboxes based on selectedIds
+                selectedIds.forEach((id) => {
+                    $(`.select-item[value="${id}"]`).prop("checked", true);
                 });
             },
             footerCallback: function (row, data, start, end, display) {
@@ -186,57 +246,14 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                 };
 
                 // Hitung total dengan menggunakan page.info()
-                const totalPersenan = api
-                    .column(2, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalJimpitan = api
-                    .column(3, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalDapurPusat = api
+                const totalJumlah = api
                     .column(4, { page: "current" })
                     .data()
                     .reduce((a, b) => parse(a) + parse(b), 0);
 
-                const totalShodaqahDaerah = api
-                    .column(5, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalShodaqahKelompok = api
-                    .column(6, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalJumlah = api
-                    .column(7, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
                 // Tampilkan hasil dengan format yang benar
-                $(api.column(2).footer()).html(
-                    `Rp ${Math.round(totalPersenan).toLocaleString("id-ID")}`
-                );
-                $(api.column(3).footer()).html(
-                    `Rp ${Math.round(totalJimpitan).toLocaleString("id-ID")}`
-                );
+
                 $(api.column(4).footer()).html(
-                    `Rp ${Math.round(totalDapurPusat).toLocaleString("id-ID")}`
-                );
-                $(api.column(5).footer()).html(
-                    `Rp ${Math.round(totalShodaqahDaerah).toLocaleString(
-                        "id-ID"
-                    )}`
-                );
-                $(api.column(6).footer()).html(
-                    `Rp ${Math.round(totalShodaqahKelompok).toLocaleString(
-                        "id-ID"
-                    )}`
-                );
-                $(api.column(7).footer()).html(
                     `Rp ${Math.round(totalJumlah).toLocaleString("id-ID")}`
                 );
             },
@@ -250,6 +267,46 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                 toast.show();
             }
         }
+        // Handle select all checkbox
+        $(document).on("change", ".select-all", function () {
+            const checked = $(this).prop("checked");
+
+            // Only select checkboxes for unverified items
+            $(".select-item").each(function () {
+                if ($(this).is(":visible")) {
+                    $(this).prop("checked", checked);
+                    const id = $(this).val();
+                    if (checked) {
+                        setSelectedIds((prev) => [...new Set([...prev, id])]);
+                    } else {
+                        setSelectedIds((prev) =>
+                            prev.filter((item) => item !== id)
+                        );
+                    }
+                }
+            });
+        });
+
+        // Handle individual checkbox
+        $(document).on("change", ".select-item", function () {
+            const id = $(this).val();
+            const checked = $(this).prop("checked");
+
+            setSelectedIds((prev) => {
+                if (checked) {
+                    return [...new Set([...prev, id])];
+                }
+                return prev.filter((item) => item !== id);
+            });
+
+            // Update select all checkbox state
+            const totalCheckboxes = $(".select-item").length;
+            const checkedCheckboxes = $(".select-item:checked").length;
+            $(".select-all").prop(
+                "checked",
+                totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes
+            );
+        });
 
         return () => {
             dt.destroy();
@@ -263,6 +320,8 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     tooltip.dispose();
                 }
             });
+            $(document).off("change", ".select-all");
+            $(document).off("change", ".select-item");
         };
     }, [flash, tanggalAwal, tanggalAkhir]);
     const deleteItem = (url) => {
@@ -287,6 +346,13 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-2 fw-bold">{title}</h5>
+                                <Link
+                                    href={route("admin.pemasukan.create")}
+                                    className="btn btn-sm btn-primary mb-3 "
+                                >
+                                    <i className="bi bi-plus-circle me-2"></i>
+                                    Tambah Pengeluaran Kas
+                                </Link>
                             </div>
                             <div className="card-body">
                                 <div className="mb-4">
@@ -323,36 +389,35 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                                         </div>
                                         <div className="col-auto">
                                             <button
-                                                className="btn btn-danger"
+                                                className="btn btn-sm btn-danger"
                                                 onClick={handleReset}
                                             >
                                                 <i className="bi bi-x-circle me-1"></i>{" "}
                                                 Reset
                                             </button>
                                         </div>
-                                        <div className="col-auto ms-auto">
+                                        <div className="col-auto">
                                             <button
-                                                className="btn btn-success me-2"
-                                                onClick={() =>
-                                                    handleExport("excel")
-                                                }
+                                                className="btn btn-sm btn-success mt-2 me-2"
+                                                onClick={handleMultipleVerify}
+                                                disabled={!selectedIds.length}
                                             >
-                                                <i className="bi bi-file-excel me-1"></i>{" "}
-                                                Export Excel
+                                                <i className="bi bi-check2-all me-1"></i>
+                                                Verifikasi Terpilih (
+                                                {selectedIds.length})
                                             </button>
                                             <button
-                                                className="btn btn-danger"
-                                                onClick={() =>
-                                                    handleExport("pdf")
-                                                }
+                                                className="btn btn-sm btn-danger mt-2"
+                                                onClick={handleMultipleDelete}
+                                                disabled={!selectedIds.length}
                                             >
-                                                <i className="bi bi-file-pdf me-1"></i>{" "}
-                                                Export PDF
+                                                <i className="bi bi-trash me-1"></i>
+                                                Hapus Terpilih (
+                                                {selectedIds.length})
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-
                                 <div className="table-responsive">
                                     <table
                                         ref={tableRef}
@@ -360,33 +425,32 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                                     >
                                         <thead>
                                             <tr className="text-center">
+                                                <th>
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input select-all"
+                                                        title="Pilih Semua"
+                                                    />
+                                                </th>
                                                 <th>No</th>
-                                                <th>NAMA</th>
-                                                <th>PERSENAN</th>
-                                                <th>JIMPITAN</th>
-                                                <th>DAPUR PUSAT</th>
-                                                <th>SHODAQAH DAERAH</th>
-                                                <th>SHODAQAH KELOMPOK</th>
+                                                <th>AKSI</th>
+                                                <th>TANGGAL</th>
+                                                <th>KAS</th>
                                                 <th>JUMLAH</th>
+                                                <th>KETERANGAN</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
                                             <tr className="text-center">
                                                 <th
-                                                    colSpan="2"
+                                                    colSpan="4"
                                                     style={{
                                                         textAlign: "right",
-                                                        paddingRight: "10px",
+                                                        paddingRight: "40px",
                                                     }}
                                                 >
                                                     Total:
                                                 </th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
                                                 <th></th>
                                             </tr>
                                         </tfoot>
@@ -397,6 +461,31 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     </div>
                 </div>
             </div>
+
+            {flash.message && (
+                <div
+                    className="position-fixed top-0 end-0 p-3"
+                    style={{ zIndex: 5 }}
+                >
+                    <div
+                        id="toast"
+                        className="toast align-items-center text-white bg-success border-0"
+                        role="alert"
+                        aria-live="assertive"
+                        aria-atomic="true"
+                    >
+                        <div className="d-flex">
+                            <div className="toast-body">{flash.message}</div>
+                            <button
+                                type="button"
+                                className="btn-close btn-close-white me-2 m-auto"
+                                data-bs-dismiss="toast"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }

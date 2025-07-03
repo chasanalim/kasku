@@ -69,7 +69,7 @@ export default function Laporan({ title }) {
             <div className="container-fluid py-4">
                 <div className="row mb-3">
                     <div className="col-md-3">
-                        <label>Bulan</label>
+                        <label className="fw-bold">Bulan</label>
                         <select
                             className="form-select"
                             value={bulan}
@@ -83,7 +83,7 @@ export default function Laporan({ title }) {
                         </select>
                     </div>
                     <div className="col-md-2">
-                        <label>Tahun</label>
+                        <label className="fw-bold">Tahun</label>
                         <select
                             className="form-select"
                             value={tahun}
@@ -95,6 +95,22 @@ export default function Laporan({ title }) {
                                 </option>
                             ))}
                         </select>
+                    </div>
+                    <div className="col-auto ms-auto">
+                        <button
+                            className="btn btn-danger"
+                            onClick={() =>
+                                window.open(
+                                    route("admin.laporan.export.pdf", {
+                                        bulan: bulan + 1,
+                                        tahun,
+                                    }),
+                                    "_blank"
+                                )
+                            }
+                        >
+                            <i className="bi bi-file-pdf me-1"></i> Export PDF
+                        </button>
                     </div>
                 </div>
                 <div className="row">
@@ -248,32 +264,25 @@ export default function Laporan({ title }) {
                                                     ).toLocaleString("id-ID")}
                                                 </th>
                                             </tr>
+                                            <tr>
+                                                <th
+                                                    colSpan={2}
+                                                    className="text-end"
+                                                >
+                                                    SALDO AKHIR
+                                                </th>
+                                                <th className="text-end text-primary">
+                                                    Rp{" "}
+                                                    {(
+                                                        Number(saldoAkhir) +
+                                                        Number(totalPemasukan) -
+                                                        Number(totalPengeluaran)
+                                                    ).toLocaleString("id-ID")}
+                                                </th>
+                                            </tr>
                                         </tfoot>
                                     </table>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    {/* Saldo Akhir */}
-                    <div className="col-12 mt-3">
-                        <div className="card">
-                            <div className="card-body text-center">
-                                <h5>
-                                    <b>SALDO AKHIR:</b>{" "}
-                                    <span
-                                        style={{
-                                            color: "blue",
-                                            fontWeight: "bold",
-                                        }}
-                                    >
-                                        Rp{" "}
-                                        {(
-                                            Number(saldoAkhir) +
-                                            Number(totalPemasukan) -
-                                            Number(totalPengeluaran)
-                                        ).toLocaleString("id-ID")}
-                                    </span>
-                                </h5>
                             </div>
                         </div>
                     </div>

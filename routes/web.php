@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\JamaahController;
 use App\Http\Controllers\Admin\KasKelompokController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\PemasukanController;
 use App\Http\Controllers\Admin\PengeluaranController;
 use App\Http\Controllers\Admin\ShodaqahController;
 use App\Http\Controllers\Admin\TransaksiController;
@@ -43,12 +44,18 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('laporan', LaporanController::class);
 
     Route::get('rekap-shodaqah', [LaporanController::class, 'rekapShodaqah'])->name('laporan.rekap-shodaqah');
+    Route::get('rekap-shodaqah-desa', [LaporanController::class, 'rekapShodaqahDesa'])->name('laporan.rekap-shodaqah-desa');
     Route::get('laporan', [LaporanController::class, 'laporan'])->name('laporan');
 
     Route::resource('pengeluaran', PengeluaranController::class);
     Route::post('pengeluaran/verify/{id}', [PengeluaranController::class, 'verify'])->name('pengeluaran.verify');
     Route::post('pengeluaran/verify-multiple', [PengeluaranController::class, 'verifyMultiple'])->name('pengeluaran.verify-multiple');
     Route::delete('pengeluaran/destroy-multiple', [PengeluaranController::class, 'destroyMultiple'])->name('pengeluaran.destroy-multiple');
+    
+    Route::resource('pemasukan', PemasukanController::class);
+    Route::post('pemasukan/verify/{id}', [PemasukanController::class, 'verify'])->name('pemasukan.verify');
+    Route::post('pemasukan/verify-multiple', [PemasukanController::class, 'verifyMultiple'])->name('pemasukan.verify-multiple');
+    Route::delete('pemasukan/destroy-multiple', [PemasukanController::class, 'destroyMultiple'])->name('pemasukan.destroy-multiple');
 
     Route::resource('kaskelompok', KasKelompokController::class);
     Route::post('kaskelompok/verify/{id}', [KasKelompokController::class, 'verify'])->name('kaskelompok.verify');
@@ -57,6 +64,12 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
 
     Route::get('shodaqah/export/pdf', [ExportController::class, 'exportPDF'])->name('shodaqah.export.pdf');
     Route::get('shodaqah/export/excel', [ExportController::class, 'exportExcel'])->name('shodaqah.export.excel');
+    Route::get('shodaqah-desa/export/pdf', [ExportController::class, 'exportPDFDesa'])->name('shodaqah-desa.export.pdf');
+    Route::get('shodaqah-desa/export/excel', [ExportController::class, 'exportExcelDesa'])->name('shodaqah-desa.export.excel');
+    
+    Route::get('laporan/export/pdf', [ExportController::class, 'exportPDFlaporan'])->name('laporan.export.pdf');
+
+
 });
 
 require __DIR__ . '/auth.php';

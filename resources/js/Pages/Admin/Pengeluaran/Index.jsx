@@ -180,6 +180,13 @@ export default function Index({ title, flash, infaq, can }) {
                     searchable: true,
                 },
                 {
+                    data: "transaksi.akun.nama",
+                    name: "transaksi.akun.nama",
+                    className: "text-center",
+                    orderable: true,
+                    searchable: true,
+                },
+                {
                     data: "jumlah",
                     name: "jumlah",
                     className: "text-center",
@@ -428,6 +435,7 @@ export default function Index({ title, flash, infaq, can }) {
                                                 <th>No</th>
                                                 <th>AKSI</th>
                                                 <th>TANGGAL</th>
+                                                <th>KAS</th>
                                                 <th>JUMLAH</th>
                                                 <th>KETERANGAN</th>
                                             </tr>

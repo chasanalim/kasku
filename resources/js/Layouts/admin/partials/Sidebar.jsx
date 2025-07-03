@@ -20,7 +20,8 @@ export default function Sidebar() {
     const isAnySubmenuPemasukanActive = () => {
         return (
             route().current("admin.shodaqah.index") ||
-            route().current("admin.infaq.index")
+            route().current("admin.infaq.index") ||
+            route().current("admin.pemasukan.index")
         );
     };
     const isAnySubmenuPengeluaranActive = () => {
@@ -32,7 +33,8 @@ export default function Sidebar() {
     const isAnySubmenuLaporanActive = () => {
         return (
             route().current("admin.laporan") ||
-            route().current("admin.laporan.rekap-shodaqah")
+            route().current("admin.laporan.rekap-shodaqah") ||
+            route().current("admin.laporan.rekap-shodaqah-desa")
         );
     };
     const isAnySubmenuQurbanActive = () => {
@@ -161,6 +163,25 @@ export default function Sidebar() {
                                                 }`}
                                             >
                                                 <span>INFAQ RUTIN</span>
+                                            </NavDropdown.Item>
+                                            <NavDropdown.Item
+                                                as={Link}
+                                                method="get"
+                                                href={route(
+                                                    "admin.pemasukan.index"
+                                                )}
+                                                active={route().current(
+                                                    "admin.pemasukan.index"
+                                                )}
+                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                    route().current(
+                                                        "admin.pemasukan.index"
+                                                    )
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <span>PEMASUKAN KAS</span>
                                             </NavDropdown.Item>
                                         </NavDropdown>
                                     </Nav>
@@ -331,7 +352,26 @@ export default function Sidebar() {
                                                         : ""
                                                 }`}
                                             >
-                                                <span>REKAP SHODAQAH</span>
+                                                <span>REKAP SHODAQAH KELOMPOK</span>
+                                            </NavDropdown.Item>
+                                            <NavDropdown.Item
+                                                as={Link}
+                                                method="get"
+                                                href={route(
+                                                    "admin.laporan.rekap-shodaqah-desa"
+                                                )}
+                                                active={route().current(
+                                                    "admin.laporan.rekap-shodaqah-desa"
+                                                )}
+                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                    route().current(
+                                                        "admin.laporan.rekap-shodaqah-desa"
+                                                    )
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <span>REKAP SHODAQAH DESA</span>
                                             </NavDropdown.Item>
                                         </NavDropdown>
                                     </Nav>
