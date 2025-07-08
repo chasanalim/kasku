@@ -72,7 +72,9 @@ class PengeluaranController extends Controller
      */
     public function create()
     {
-        $akun = AkunRekening::where('tipe', 'kas')->get();
+        $akun = AkunRekening::where('tipe', 'kas')
+            ->orWhere('tipe', 'penampung')
+            ->get();
         return Inertia::render('Admin/Pengeluaran/Create', [
             'title' => 'Tambah Pengeluaran Kas',
             'action' => route('admin.pengeluaran.store'),
