@@ -3,6 +3,29 @@ import { Head, useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 
+const KATEGORI_VALUES = {
+    A: {
+        dapur_pusat: 40000,
+        shodaqah_daerah: 27000,
+        shodaqah_kelompok: 8000,
+    },
+    B: {
+        dapur_pusat: 25000,
+        shodaqah_daerah: 17000,
+        shodaqah_kelompok: 8000,
+    },
+    C: {
+        dapur_pusat: 20000,
+        shodaqah_daerah: 12000,
+        shodaqah_kelompok: 8000,
+    },
+    D: {
+        dapur_pusat: 0,
+        shodaqah_daerah: 0,
+        jimpitan: 0,
+    },
+};
+
 export default function Create({
     title,
     shodaqah,
@@ -29,8 +52,59 @@ export default function Create({
                 (item) => item.id === parseInt(data.jamaah_id)
             );
             if (selectedJamaah) {
-                setData("kategori", selectedJamaah.kategori);
+                setData((data) => ({
+                    ...data,
+                    kategori: selectedJamaah.kategori,
+                    jimpitan:
+                        KATEGORI_VALUES[selectedJamaah.kategori]?.jimpitan ||
+                        "",
+                    dapur_pusat:
+                        KATEGORI_VALUES[selectedJamaah.kategori]?.dapur_pusat ||
+                        "",
+                    shodaqah_daerah:
+                        KATEGORI_VALUES[selectedJamaah.kategori]
+                            ?.shodaqah_daerah || "",
+                    shodaqah_kelompok:
+                        KATEGORI_VALUES[selectedJamaah.kategori]
+                            ?.shodaqah_kelompok || "",
+                }));
+
+                // Update formatted values
+                setFormattedJimpitan(
+                    KATEGORI_VALUES[
+                        selectedJamaah.kategori
+                    ]?.jimpitan?.toLocaleString("id-ID") || ""
+                );
+                setFormattedDapurPusat(
+                    KATEGORI_VALUES[
+                        selectedJamaah.kategori
+                    ]?.dapur_pusat?.toLocaleString("id-ID") || ""
+                );
+                setFormattedShodaqahDaerah(
+                    KATEGORI_VALUES[
+                        selectedJamaah.kategori
+                    ]?.shodaqah_daerah?.toLocaleString("id-ID") || ""
+                );
+                setFormattedShodaqahKelompok(
+                    KATEGORI_VALUES[
+                        selectedJamaah.kategori
+                    ]?.shodaqah_kelompok?.toLocaleString("id-ID") || ""
+                );
             }
+        } else {
+            // Reset values when no jamaah is selected
+            setData((data) => ({
+                ...data,
+                kategori: "",
+                jimpitan: "",
+                dapur_pusat: "",
+                shodaqah_daerah: "",
+                shodaqah_kelompok: "",
+            }));
+            setFormattedJimpitan("");
+            setFormattedDapurPusat("");
+            setFormattedShodaqahDaerah("");
+            setFormattedShodaqahKelompok("");
         }
     }, [data.jamaah_id]);
 
@@ -195,7 +269,8 @@ export default function Create({
                                                             key={item.id}
                                                             value={item.id}
                                                         >
-                                                            {item.nama}
+                                                            {item.nama} |{" "}
+                                                            {item.kategori}
                                                         </option>
                                                     ))}
                                                 </select>
@@ -274,6 +349,7 @@ export default function Create({
                                                     placeholder="Masukkan Dapur Pusat"
                                                     inputMode="numeric"
                                                     autoComplete="off"
+                                                    // readOnly={!!data.kategori}
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.dapur_pusat}
@@ -296,9 +372,10 @@ export default function Create({
                                                     isInvalid={
                                                         !!errors.shodaqah_daerah
                                                     }
-                                                    placeholder="Masukkan Jumlah"
+                                                    placeholder="Masukkan Shodaqah Daerah"
                                                     inputMode="numeric"
                                                     autoComplete="off"
+                                                    // readOnly={!!data.kategori}
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.shodaqah_daerah}
@@ -321,9 +398,10 @@ export default function Create({
                                                     isInvalid={
                                                         !!errors.shodaqah_kelompok
                                                     }
-                                                    placeholder="Masukkan Jumlah"
+                                                    placeholder="Masukkan Shodaqah Kelompok"
                                                     inputMode="numeric"
                                                     autoComplete="off"
+                                                    // readOnly={!!data.kategori}
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.shodaqah_kelompok}

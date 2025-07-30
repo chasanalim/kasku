@@ -1,13 +1,28 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, useForm } from "@inertiajs/react";
+import { useState } from "react";
 import { Form } from "react-bootstrap";
 
 export default function Create({ title, jamaah, action, method = "POST" }) {
     const { data, setData, post, put, processing, errors, progress } = useForm({
         nama: jamaah?.nama || "",
         kategori: jamaah?.kategori || "",
+        jatah : jamaah?.jatah || "",
         status: jamaah?.status || "",
     });
+
+    const [formattedJatah, setFormattedJatah] = useState(
+        data.jatah ? Number(data.jatah).toLocaleString("id-ID") : ""
+    );
+
+    // Handler untuk input jumlah
+    const handleJatahChange = (e) => {
+        // Hapus semua karakter selain angka
+        const raw = e.target.value.replace(/\D/g, "");
+        setData("jatah", raw);
+        setFormattedJatah(raw ? Number(raw).toLocaleString("id-ID") : "");
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (method === "PUT") {
@@ -33,7 +48,7 @@ export default function Create({ title, jamaah, action, method = "POST" }) {
                             <div className="card-body">
                                 <form onSubmit={handleSubmit}>
                                     <div className="row">
-                                        <div className="col-md-4">
+                                        <div className="col-md-3">
                                             <Form.Group className="mb-3">
                                                 <Form.Label className="required">
                                                     NAMA
@@ -55,7 +70,7 @@ export default function Create({ title, jamaah, action, method = "POST" }) {
                                                 </Form.Control.Feedback>
                                             </Form.Group>
                                         </div>
-                                        <div className="col-md-4">
+                                        <div className="col-md-3">
                                             <Form.Group className="mb-3">
                                                 <Form.Label className="required">
                                                     KATEGORI
@@ -69,12 +84,11 @@ export default function Create({ title, jamaah, action, method = "POST" }) {
                                                             e.target.value
                                                         )
                                                     }
-                                                    isInvalid={!!errors.kategori}
+                                                    isInvalid={
+                                                        !!errors.kategori
+                                                    }
                                                 >
-                                                    <option
-                                                        value=""
-                                                        disabled
-                                                    >
+                                                    <option value="" disabled>
                                                         Pilih Kategori
                                                     </option>
                                                     <option value="A">A</option>
@@ -86,7 +100,26 @@ export default function Create({ title, jamaah, action, method = "POST" }) {
                                                 </Form.Control.Feedback>
                                             </Form.Group>
                                         </div>
-                                        <div className="col-md-4">
+                                        <div className="col-md-3">
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Jatah</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    value={formattedJatah}
+                                                    onChange={
+                                                        handleJatahChange
+                                                    }
+                                                    isInvalid={!!errors.jatah}
+                                                    placeholder="Masukkan Jatah"
+                                                    inputMode="numeric"
+                                                    autoComplete="off"
+                                                />
+                                                <Form.Control.Feedback type="invalid">
+                                                    {errors.jatah}
+                                                </Form.Control.Feedback>
+                                            </Form.Group>
+                                        </div>
+                                        <div className="col-md-3">
                                             <Form.Group className="mb-3">
                                                 <Form.Label className="required">
                                                     STATUS
@@ -102,10 +135,7 @@ export default function Create({ title, jamaah, action, method = "POST" }) {
                                                     }
                                                     isInvalid={!!errors.status}
                                                 >
-                                                    <option
-                                                        value=""
-                                                        disabled
-                                                    >
+                                                    <option value="" disabled>
                                                         Pilih Status
                                                     </option>
                                                     <option value="1">

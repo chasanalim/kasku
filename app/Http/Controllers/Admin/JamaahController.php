@@ -58,10 +58,12 @@ class JamaahController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'kategori' => 'required',
+            'jatah' => 'required',
             'status' => 'required',]);
 
         Jamaah::create([
             'nama' => $request->nama,
+            'jatah' => $request->jatah,
             'kategori' => $request->kategori,
             'status' => $request->status,
         ]);
@@ -103,11 +105,13 @@ class JamaahController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'kategori' => 'required',
+            'jatah' => 'required',
             'status' => 'required',]);
 
         $jamaah->update([
             'nama' => $request->nama,
             'kategori' => $request->kategori,
+            'jatah' => $request->jatah,
             'status' => $request->status,
         ]);
 

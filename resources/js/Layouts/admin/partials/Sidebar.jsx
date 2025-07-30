@@ -33,8 +33,11 @@ export default function Sidebar() {
     const isAnySubmenuLaporanActive = () => {
         return (
             route().current("admin.laporan") ||
+            route().current("admin.jurnal") ||
+            route().current("admin.buku-besar") ||
             route().current("admin.laporan.rekap-shodaqah") ||
-            route().current("admin.laporan.rekap-shodaqah-desa")
+            route().current("admin.laporan.rekap-shodaqah-desa") ||
+            route().current("admin.laporan.rekap-tabungan")
         );
     };
     const isAnySubmenuQurbanActive = () => {
@@ -239,7 +242,9 @@ export default function Sidebar() {
                                                         : ""
                                                 }`}
                                             >
-                                                <span>PENGELUARAN KELOMPOK</span>
+                                                <span>
+                                                    PENGELUARAN KELOMPOK
+                                                </span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}
@@ -300,15 +305,30 @@ export default function Sidebar() {
                                             <NavDropdown.Item
                                                 as={Link}
                                                 method="get"
-                                                href={route(
-                                                    "admin.jamaah.index"
-                                                )}
+                                                href={route("admin.jurnal")}
                                                 active={route().current(
-                                                    "admin.jamaah.index"
+                                                    "admin.jurnal"
                                                 )}
                                                 className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
                                                     route().current(
-                                                        "admin.jamaah.index"
+                                                        "admin.jurnal"
+                                                    )
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <span>POSTING JURNAL</span>
+                                            </NavDropdown.Item>
+                                            <NavDropdown.Item
+                                                as={Link}
+                                                method="get"
+                                                href={route("admin.buku-besar")}
+                                                active={route().current(
+                                                    "admin.buku-besar"
+                                                )}
+                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                    route().current(
+                                                        "admin.buku-besar"
                                                     )
                                                         ? "active"
                                                         : ""
@@ -319,9 +339,7 @@ export default function Sidebar() {
                                             <NavDropdown.Item
                                                 as={Link}
                                                 method="get"
-                                                href={route(
-                                                    "admin.laporan"
-                                                )}
+                                                href={route("admin.laporan")}
                                                 active={route().current(
                                                     "admin.jamaah.index"
                                                 )}
@@ -352,7 +370,9 @@ export default function Sidebar() {
                                                         : ""
                                                 }`}
                                             >
-                                                <span>REKAP SHODAQAH KELOMPOK</span>
+                                                <span>
+                                                    REKAP SHODAQAH KELOMPOK
+                                                </span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}
@@ -372,6 +392,25 @@ export default function Sidebar() {
                                                 }`}
                                             >
                                                 <span>REKAP SHODAQAH DESA</span>
+                                            </NavDropdown.Item>
+                                            <NavDropdown.Item
+                                                as={Link}
+                                                method="get"
+                                                href={route(
+                                                    "admin.laporan.rekap-tabungan"
+                                                )}
+                                                active={route().current(
+                                                    "admin.laporan.rekap-tabungan"
+                                                )}
+                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                    route().current(
+                                                        "admin.laporan.rekap-tabungan"
+                                                    )
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <span>REKAP TABUNGAN MASJID</span>
                                             </NavDropdown.Item>
                                         </NavDropdown>
                                     </Nav>
@@ -450,6 +489,36 @@ export default function Sidebar() {
                                             </NavDropdown.Item>
                                         </NavDropdown>
                                     </Nav>
+                                </li>
+                            </>
+                        )}
+
+                        {can.viewQurban && (
+                            <>
+                                <li>
+                                    <h6 className="text-uppercase mt-3 menu">
+                                        Tabungan Masjid Daerah
+                                    </h6>
+                                </li>
+                                <li>
+                                    <NavLink
+                                        href={route("admin.tabungan.index")}
+                                        active={route().current(
+                                            "admin.tabungan.index"
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.tabungan.index"
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-person-fill-lock fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Tabungan
+                                        </span>
+                                    </NavLink>
                                 </li>
                             </>
                         )}

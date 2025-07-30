@@ -78,6 +78,15 @@ export default function Index({ title, flash }) {
                     searchable: true,
                 },
                 {
+                    data: "jatah",
+                    name: "jatah",
+                    orderable: true,
+                    searchable: true,
+                    render: function (data) {
+                        return Number(data).toLocaleString("id-ID");
+                    }
+                },
+                {
                     data: "status",
                     name: "status",
                     render: function (data) {
@@ -163,6 +172,7 @@ export default function Index({ title, flash }) {
                                                 <th>Aksi</th>
                                                 <th>NAMA LENGKAP</th>
                                                 <th>KATEGORI</th>
+                                                <th>JATAH</th>
                                                 <th>STATUS</th>
                                             </tr>
                                         </thead>

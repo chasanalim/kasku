@@ -21,8 +21,7 @@ class ShodaqahController extends Controller
     {
         $shodaqah = DetailTransaksi::with(['transaksi', 'transaksi.akun', 'jamaah'])
             ->whereHas('transaksi', function ($query) {
-                $query->where('jenis', 'pemasukan')
-                    ->whereNot('akun_id', 1);
+                $query->where('jenis', 'pemasukan');
             })
             ->orderBy('id', 'desc')
             ->get();
@@ -30,9 +29,9 @@ class ShodaqahController extends Controller
         if ($request->wantsJson()) {
             $data = DetailTransaksi::with(['transaksi', 'transaksi.akun', 'jamaah'])
                 ->whereHas('transaksi', function ($query) {
-                    $query->where('jenis', 'pemasukan')
-                    ->whereNot('akun_id', 1);;
+                    $query->where('jenis', 'pemasukan');
                 })
+                ->whereNotNull('jamaah_id')
                 ->orderBy('id', 'desc')
                 ->whereHas('transaksi', function ($query) use ($request) {
                     if ($request->tanggal_awal && $request->tanggal_akhir) {
@@ -138,59 +137,59 @@ class ShodaqahController extends Controller
                     'jumlah' => $request->jimpitan,
                 ]);
             }
-            if ($request->kategori == 'A') {
-                if ($request->dapur_pusat > 0) {
-                    $akunDapurPusat = AkunRekening::where('kode_akun', '602')->first();
-                    $akunDapurPusat->increment('saldo_awal', $request->dapur_pusat);
+            if ($request->dapur_pusat > 0) {
+                $akunDapurPusat = AkunRekening::where('kode_akun', '602')->first();
+                $akunDapurPusat->increment('saldo_awal', $request->dapur_pusat);
 
-                    $transaksiDapurPusat = Transaksi::create([
-                        'tanggal' => $request->tanggal,
-                        'akun_id' => $akunDapurPusat->id,
-                        'keterangan' => 'Dapur Pusat dari ' . Jamaah::find($request->jamaah_id)->nama,
-                        'jenis' => 'pemasukan'
-                    ]);
-                    DetailTransaksi::create([
-                        'transaksi_id' => $transaksiDapurPusat->id,
-                        'jamaah_id' => $request->jamaah_id,
-                        'persenan' => 0,
-                        'jimpitan' => 0,
-                        'dapur_pusat' => $request->dapur_pusat,
-                        'shodaqah_daerah' => 0,
-                        'shodaqah_kelompok' => 0,
-                        'jumlah' => $request->dapur_pusat,
-                    ]);
-                }
-                if ($request->shodaqah_daerah > 0) {
-                    $akunShodaqahDaerah = AkunRekening::where('kode_akun', '603')->first();
-                    $akunShodaqahDaerah->increment('saldo_awal', $request->shodaqah_daerah);
+                $transaksiDapurPusat = Transaksi::create([
+                    'tanggal' => $request->tanggal,
+                    'akun_id' => $akunDapurPusat->id,
+                    'keterangan' => 'Dapur Pusat dari ' . Jamaah::find($request->jamaah_id)->nama,
+                    'jenis' => 'pemasukan'
+                ]);
+                DetailTransaksi::create([
+                    'transaksi_id' => $transaksiDapurPusat->id,
+                    'jamaah_id' => $request->jamaah_id,
+                    'persenan' => 0,
+                    'jimpitan' => 0,
+                    'dapur_pusat' => $request->dapur_pusat,
+                    'shodaqah_daerah' => 0,
+                    'shodaqah_kelompok' => 0,
+                    'jumlah' => $request->dapur_pusat,
+                ]);
+            }
+            if ($request->shodaqah_daerah > 0) {
+                $akunShodaqahDaerah = AkunRekening::where('kode_akun', '603')->first();
+                $akunShodaqahDaerah->increment('saldo_awal', $request->shodaqah_daerah);
 
-                    $transaksiShodaqahDaerah = Transaksi::create([
-                        'tanggal' => $request->tanggal,
-                        'akun_id' => $akunShodaqahDaerah->id,
-                        'keterangan' => 'Shodaqah Daerah dari ' . Jamaah::find($request->jamaah_id)->nama,
-                        'jenis' => 'pemasukan'
-                    ]);
-                    DetailTransaksi::create([
-                        'transaksi_id' => $transaksiShodaqahDaerah->id,
-                        'jamaah_id' => $request->jamaah_id,
-                        'persenan' => 0,
-                        'jimpitan' => 0,
-                        'dapur_pusat' => 0,
-                        'shodaqah_daerah' => $request->shodaqah_daerah,
-                        'shodaqah_kelompok' => 0,
-                        'jumlah' => $request->shodaqah_daerah,
-                    ]);
-                }
+                $transaksiShodaqahDaerah = Transaksi::create([
+                    'tanggal' => $request->tanggal,
+                    'akun_id' => $akunShodaqahDaerah->id,
+                    'keterangan' => 'Shodaqah Daerah dari ' . Jamaah::find($request->jamaah_id)->nama,
+                    'jenis' => 'pemasukan'
+                ]);
+                DetailTransaksi::create([
+                    'transaksi_id' => $transaksiShodaqahDaerah->id,
+                    'jamaah_id' => $request->jamaah_id,
+                    'persenan' => 0,
+                    'jimpitan' => 0,
+                    'dapur_pusat' => 0,
+                    'shodaqah_daerah' => $request->shodaqah_daerah,
+                    'shodaqah_kelompok' => 0,
+                    'jumlah' => $request->shodaqah_daerah,
+                ]);
+            }
 
-                if ($request->shodaqah_kelompok > 0) {
-                    $akunDanaAsad = AkunRekening::where('kode_akun', '102')->first();
-                    $akunListrik = AkunRekening::where('kode_akun', '103')->first();
-                    $akunDanaSosial = AkunRekening::where('kode_akun', '104')->first();
-                    if ($request->shodaqah_kelompok == 8000) {
-                        $akunDanaAsad->increment('saldo_awal', 2000);
-                        $akunListrik->increment('saldo_awal', 3000);
-                        $akunDanaSosial->increment('saldo_awal', 3000);
-                    }
+            if ($request->shodaqah_kelompok > 0) {
+                $akunDanaAsad = AkunRekening::where('kode_akun', '102')->first();
+                $akunListrik = AkunRekening::where('kode_akun', '103')->first();
+                $akunDanaSosial = AkunRekening::where('kode_akun', '104')->first();
+                $sisa = $request->shodaqah_kelompok - 5000;
+                if ($request->shodaqah_kelompok >= 8000) {
+                    $akunDanaAsad->increment('saldo_awal', 2000);
+                    $akunListrik->increment('saldo_awal', 3000);
+                    $akunDanaSosial->increment('saldo_awal', $sisa);
+
 
                     $transaksiDanaAsad = Transaksi::create([
                         'tanggal' => $request->tanggal,
@@ -241,8 +240,8 @@ class ShodaqahController extends Controller
                         'jimpitan' => 0,
                         'dapur_pusat' => 0,
                         'shodaqah_daerah' => 0,
-                        'shodaqah_kelompok' => 3000,
-                        'jumlah' => 3000,
+                        'shodaqah_kelompok' => $sisa,
+                        'jumlah' => $sisa,
                     ]);
                 }
             }

@@ -8,7 +8,7 @@ import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-export default function Index({ title, flash, shodaqah, can }) {
+export default function Index({ title, flash, tabungan, can }) {
     const tableRef = useRef();
     const [selectedIds, setSelectedIds] = useState([]);
     const verifyItem = (url) => {
@@ -53,7 +53,7 @@ export default function Index({ title, flash, shodaqah, can }) {
         if (!confirm("Yakin ingin memverifikasi data terpilih?")) return;
 
         router.post(
-            route("admin.shodaqah.verify-multiple"),
+            route("admin.tabungan.verify-multiple"),
             {
                 ids: selectedIds,
             },
@@ -71,7 +71,7 @@ export default function Index({ title, flash, shodaqah, can }) {
 
         if (!confirm("Yakin ingin menghapus data terpilih?")) return;
 
-        router.delete(route("admin.shodaqah.destroy-multiple"), {
+        router.delete(route("admin.tabungan.destroy-multiple"), {
             data: { ids: selectedIds },
             onSuccess: () => {
                 setSelectedIds([]);
@@ -91,7 +91,7 @@ export default function Index({ title, flash, shodaqah, can }) {
                 [100, 500, "All"],
             ],
             ajax: {
-                url: route("admin.shodaqah.index"),
+                url: route("admin.tabungan.index"),
                 type: "GET",
                 data: (d) => {
                     if (tanggalAwal && tanggalAkhir) {
@@ -173,8 +173,8 @@ export default function Index({ title, flash, shodaqah, can }) {
                     },
                 },
                 {
-                    data: "transaksi.tanggal",
-                    name: "transaksi.tanggal",
+                    data: "tanggal",
+                    name: "tanggal",
                     className: "text-center",
                     orderable: true,
                     searchable: true,
@@ -184,55 +184,6 @@ export default function Index({ title, flash, shodaqah, can }) {
                     name: "jamaah.nama",
                     orderable: true,
                     searchable: true,
-                },
-                {
-                    data: "persenan",
-                    name: "persenan",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
-                },
-                {
-                    data: "jimpitan",
-                    name: "jimpitan",
-                    className: "text-center",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
-                },
-                {
-                    data: "dapur_pusat",
-                    name: "dapur_pusat",
-                    className: "text-center",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
-                },
-                {
-                    data: "shodaqah_daerah",
-                    name: "shodaqah_daerah",
-                    className: "text-center",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
-                },
-                {
-                    data: "shodaqah_kelompok",
-                    name: "shodaqah_kelompok",
-                    className: "text-center",
-                    orderable: true,
-                    searchable: true,
-                    render: function (data) {
-                        return parseInt(data).toLocaleString("id-ID");
-                    },
                 },
                 {
                     data: "jumlah",
@@ -245,8 +196,8 @@ export default function Index({ title, flash, shodaqah, can }) {
                     },
                 },
                 {
-                    data: "transaksi.keterangan",
-                    name: "transaksi.keterangan",
+                    data: "keterangan",
+                    name: "keterangan",
                     orderable: true,
                     searchable: true,
                 },
@@ -294,57 +245,14 @@ export default function Index({ title, flash, shodaqah, can }) {
                 };
 
                 // Hitung total dengan menggunakan page.info()
-                const totalPersenan = api
-                    .column(5, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalJimpitan = api
-                    .column(6, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalDapurPusat = api
-                    .column(7, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalShodaqahDaerah = api
-                    .column(8, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
-
-                const totalShodaqahKelompok = api
-                    .column(9, { page: "current" })
-                    .data()
-                    .reduce((a, b) => parse(a) + parse(b), 0);
 
                 const totalJumlah = api
-                    .column(10, { page: "current" })
+                    .column(5, { page: "current" })
                     .data()
                     .reduce((a, b) => parse(a) + parse(b), 0);
 
                 // Tampilkan hasil dengan format yang benar
                 $(api.column(5).footer()).html(
-                    `Rp ${Math.round(totalPersenan).toLocaleString("id-ID")}`
-                );
-                $(api.column(6).footer()).html(
-                    `Rp ${Math.round(totalJimpitan).toLocaleString("id-ID")}`
-                );
-                $(api.column(7).footer()).html(
-                    `Rp ${Math.round(totalDapurPusat).toLocaleString("id-ID")}`
-                );
-                $(api.column(8).footer()).html(
-                    `Rp ${Math.round(totalShodaqahDaerah).toLocaleString(
-                        "id-ID"
-                    )}`
-                );
-                $(api.column(9).footer()).html(
-                    `Rp ${Math.round(totalShodaqahKelompok).toLocaleString(
-                        "id-ID"
-                    )}`
-                );
-                $(api.column(10).footer()).html(
                     `Rp ${Math.round(totalJumlah).toLocaleString("id-ID")}`
                 );
             },
@@ -438,11 +346,11 @@ export default function Index({ title, flash, shodaqah, can }) {
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-2 fw-bold">{title}</h5>
                                 <Link
-                                    href={route("admin.shodaqah.create")}
+                                    href={route("admin.tabungan.create")}
                                     className="btn btn-sm btn-primary mb-3"
                                 >
                                     <i className="bi bi-plus-circle me-2"></i>
-                                    Tambah Data Shodaqah
+                                    Tambah Data Tabungan Masjid
                                 </Link>
                             </div>
                             <div className="card-body">
@@ -527,11 +435,6 @@ export default function Index({ title, flash, shodaqah, can }) {
                                                 <th>AKSI</th>
                                                 <th>TANGGAL</th>
                                                 <th>NAMA</th>
-                                                <th>PERSENAN</th>
-                                                <th>JIMPITAN</th>
-                                                <th>DAPUR PUSAT</th>
-                                                <th>SHODAQAH DAERAH</th>
-                                                <th>SHODAQAH KELOMPOK</th>
                                                 <th>JUMLAH</th>
                                                 <th>KETERANGAN</th>
                                             </tr>
@@ -547,11 +450,6 @@ export default function Index({ title, flash, shodaqah, can }) {
                                                 >
                                                     Total:
                                                 </th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
                                                 <th></th>
                                                 <th></th>
                                             </tr>

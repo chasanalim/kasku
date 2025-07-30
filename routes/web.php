@@ -15,7 +15,7 @@ use App\Http\Controllers\Admin\ShodaqahController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Admin\PrivilegesController;
-
+use App\Http\Controllers\Admin\TabunganMasjidController;
 
 Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -36,16 +36,18 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::post('shodaqah/verify/{id}', [ShodaqahController::class, 'verify'])->name('shodaqah.verify');
     Route::post('shodaqah/verify-multiple', [ShodaqahController::class, 'verifyMultiple'])->name('shodaqah.verify-multiple');
     Route::delete('shodaqah/destroy-multiple', [ShodaqahController::class, 'destroyMultiple'])->name('shodaqah.destroy-multiple');
-
+    
     Route::resource('infaq', InfaqController::class);
     Route::post('infaq/verify/{id}', [InfaqController::class, 'verify'])->name('infaq.verify');
     Route::post('infaq/verify-multiple', [InfaqController::class, 'verifyMultiple'])->name('infaq.verify-multiple');
     Route::delete('infaq/destroy-multiple', [InfaqController::class, 'destroyMultiple'])->name('infaq.destroy-multiple');
-    Route::resource('laporan', LaporanController::class);
 
     Route::get('rekap-shodaqah', [LaporanController::class, 'rekapShodaqah'])->name('laporan.rekap-shodaqah');
     Route::get('rekap-shodaqah-desa', [LaporanController::class, 'rekapShodaqahDesa'])->name('laporan.rekap-shodaqah-desa');
     Route::get('laporan', [LaporanController::class, 'laporan'])->name('laporan');
+    Route::get('buku-besar', [LaporanController::class, 'bukuBesar'])->name('buku-besar');
+    Route::get('jurnal', [LaporanController::class, 'jurnal'])->name('jurnal');
+    Route::get('rekap-tabungan-masjid', [LaporanController::class, 'rekapTabungan'])->name('laporan.rekap-tabungan');
 
     Route::resource('pengeluaran', PengeluaranController::class);
     Route::post('pengeluaran/verify/{id}', [PengeluaranController::class, 'verify'])->name('pengeluaran.verify');
@@ -68,6 +70,11 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('shodaqah-desa/export/excel', [ExportController::class, 'exportExcelDesa'])->name('shodaqah-desa.export.excel');
     
     Route::get('laporan/export/pdf', [ExportController::class, 'exportPDFlaporan'])->name('laporan.export.pdf');
+
+    Route::resource('tabungan', TabunganMasjidController::class);
+    Route::post('tabungan/verify/{id}', [TabunganMasjidController::class, 'verify'])->name('tabungan.verify');
+    Route::post('tabungan/verify-multiple', [TabunganMasjidController::class, 'verifyMultiple'])->name('tabungan.verify-multiple');
+    Route::delete('tabungan/destroy-multiple', [TabunganMasjidController::class, 'destroyMultiple'])->name('tabungan.destroy-multiple');
 
 
 });

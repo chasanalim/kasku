@@ -156,7 +156,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "status",
                     title: "Status",
                     className: "text-center",
-                    orderable: false,
+                    orderable: true,
                     searchable: false,
                 },
             ],

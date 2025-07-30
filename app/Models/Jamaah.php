@@ -11,7 +11,25 @@ class Jamaah extends Model
     protected $fillable = [
         'nama',
         'kategori',
+        'jatah',
         'status',
     ];
 
+    public function tabungan()
+    {
+        return $this->hasMany(TabunganMasjid::class, 'jamaah_id');
+    }
+
+    public function getTotalTabunganAttribute()
+    {
+        return $this->tabungan()->where('status', 1)->sum('jumlah');
+    }
+
+    public function getPercentageAttribute()
+    {
+        if ($this->jatah > 0) {
+            return round(($this->total_tabungan / $this->jatah) * 100, 2);
+        }
+        return 0;
+    }
 }

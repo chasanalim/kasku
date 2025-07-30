@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('kategori');
+            $table->decimal('jatah', 15, 2)->default(0)->nullable();
             $table->string('status');
             $table->timestamps();
         });
