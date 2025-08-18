@@ -190,7 +190,6 @@ class ShodaqahController extends Controller
                     $akunListrik->increment('saldo_awal', 3000);
                     $akunDanaSosial->increment('saldo_awal', $sisa);
 
-
                     $transaksiDanaAsad = Transaksi::create([
                         'tanggal' => $request->tanggal,
                         'akun_id' => $akunDanaAsad->id,
@@ -242,6 +241,24 @@ class ShodaqahController extends Controller
                         'shodaqah_daerah' => 0,
                         'shodaqah_kelompok' => $sisa,
                         'jumlah' => $sisa,
+                    ]);
+                } else {
+                    $transaksiListrik = Transaksi::create([
+                        'tanggal' => $request->tanggal,
+                        'akun_id' => $akunListrik->id,
+                        'keterangan' => 'Dana Listrik dari ' . Jamaah::find($request->jamaah_id)->nama,
+                        'jenis' => 'pemasukan'
+                    ]);
+
+                    DetailTransaksi::create([
+                        'transaksi_id' => $transaksiListrik->id,
+                        'jamaah_id' => $request->jamaah_id,
+                        'persenan' => 0,
+                        'jimpitan' => 0,
+                        'dapur_pusat' => 0,
+                        'shodaqah_daerah' => 0,
+                        'shodaqah_kelompok' => $request->shodaqah_kelompok,
+                        'jumlah' => $request->shodaqah_kelompok,
                     ]);
                 }
             }

@@ -16,27 +16,41 @@ class ExportController extends Controller
     {
         $tanggalAwal = $request->tanggal_awal;
         $tanggalAkhir = $request->tanggal_akhir;
-
-        $data = DB::table('jamaah')
-            ->leftJoin('detail_transaksi', 'jamaah.id', '=', 'detail_transaksi.jamaah_id')
-            ->leftJoin('transaksi', function ($join) use ($tanggalAwal, $tanggalAkhir) {
-                $join->on('detail_transaksi.transaksi_id', '=', 'transaksi.id')
-                    ->where('transaksi.jenis', '=', 'pemasukan');
-
-                if ($tanggalAwal && $tanggalAkhir) {
-                    $join->whereBetween('transaksi.tanggal', [$tanggalAwal, $tanggalAkhir]);
-                }
+    
+        // Subquery untuk filter transaksi dulu
+        $filteredTransaksi = DB::table('detail_transaksi')
+            ->join('transaksi', 'detail_transaksi.transaksi_id', '=', 'transaksi.id')
+            ->where('transaksi.jenis', 'pemasukan')
+            ->when($tanggalAwal && $tanggalAkhir, function ($query) use ($tanggalAwal, $tanggalAkhir) {
+                $query->whereBetween('transaksi.tanggal', [$tanggalAwal, $tanggalAkhir])
+                      ->whereNotNull('transaksi.tanggal');
             })
             ->select(
-                'jamaah.nama',
-                DB::raw('COALESCE(SUM(detail_transaksi.persenan), 0) as persenan'),
-                DB::raw('COALESCE(SUM(detail_transaksi.jimpitan), 0) as jimpitan'),
-                DB::raw('COALESCE(SUM(detail_transaksi.dapur_pusat), 0) as dapur_pusat'),
-                DB::raw('COALESCE(SUM(detail_transaksi.shodaqah_daerah), 0) as shodaqah_daerah'),
-                DB::raw('COALESCE(SUM(detail_transaksi.shodaqah_kelompok), 0) as shodaqah_kelompok'),
-                DB::raw('COALESCE(SUM(detail_transaksi.jumlah), 0) as jumlah')
+                'detail_transaksi.jamaah_id',
+                DB::raw('SUM(detail_transaksi.persenan) as persenan'),
+                DB::raw('SUM(detail_transaksi.jimpitan) as jimpitan'),
+                DB::raw('SUM(detail_transaksi.dapur_pusat) as dapur_pusat'),
+                DB::raw('SUM(detail_transaksi.shodaqah_daerah) as shodaqah_daerah'),
+                DB::raw('SUM(detail_transaksi.shodaqah_kelompok) as shodaqah_kelompok'),
+                DB::raw('SUM(detail_transaksi.jumlah) as jumlah')
             )
-            ->groupBy('jamaah.id', 'jamaah.nama')
+            ->groupBy('detail_transaksi.jamaah_id');
+    
+        // Join jamaah dengan subquery
+        $data = DB::table('jamaah')
+            ->leftJoinSub($filteredTransaksi, 't', function ($join) {
+                $join->on('jamaah.id', '=', 't.jamaah_id');
+            })
+            ->select(
+                'jamaah.id as no',
+                'jamaah.nama',
+                DB::raw('COALESCE(t.persenan, 0) as persenan'),
+                DB::raw('COALESCE(t.jimpitan, 0) as jimpitan'),
+                DB::raw('COALESCE(t.dapur_pusat, 0) as dapur_pusat'),
+                DB::raw('COALESCE(t.shodaqah_daerah, 0) as shodaqah_daerah'),
+                DB::raw('COALESCE(t.shodaqah_kelompok, 0) as shodaqah_kelompok'),
+                DB::raw('COALESCE(t.jumlah, 0) as jumlah')
+            )
             ->orderBy('jamaah.id')
             ->get();
         // return response()->json($data);
@@ -54,64 +68,93 @@ class ExportController extends Controller
     public function exportExcel(Request $request)
     {
         $tanggalAwal = $request->tanggal_awal;
-        $tanggalAkhir = $request->tanggal_akhir;
+    $tanggalAkhir = $request->tanggal_akhir;
 
-        $data = DB::table('jamaah')
-            ->leftJoin('detail_transaksi', 'jamaah.id', '=', 'detail_transaksi.jamaah_id')
-            ->leftJoin('transaksi', function ($join) use ($tanggalAwal, $tanggalAkhir) {
-                $join->on('detail_transaksi.transaksi_id', '=', 'transaksi.id')
-                    ->where('transaksi.jenis', '=', 'pemasukan');
+    // Subquery untuk filter transaksi dulu
+    $filteredTransaksi = DB::table('detail_transaksi')
+        ->join('transaksi', 'detail_transaksi.transaksi_id', '=', 'transaksi.id')
+        ->where('transaksi.jenis', 'pemasukan')
+        ->when($tanggalAwal && $tanggalAkhir, function ($query) use ($tanggalAwal, $tanggalAkhir) {
+            $query->whereBetween('transaksi.tanggal', [$tanggalAwal, $tanggalAkhir])
+                  ->whereNotNull('transaksi.tanggal');
+        })
+        ->select(
+            'detail_transaksi.jamaah_id',
+            DB::raw('SUM(detail_transaksi.persenan) as persenan'),
+            DB::raw('SUM(detail_transaksi.jimpitan) as jimpitan'),
+            DB::raw('SUM(detail_transaksi.dapur_pusat) as dapur_pusat'),
+            DB::raw('SUM(detail_transaksi.shodaqah_daerah) as shodaqah_daerah'),
+            DB::raw('SUM(detail_transaksi.shodaqah_kelompok) as shodaqah_kelompok'),
+            DB::raw('SUM(detail_transaksi.jumlah) as jumlah')
+        )
+        ->groupBy('detail_transaksi.jamaah_id');
 
-                if ($tanggalAwal && $tanggalAkhir) {
-                    $join->whereBetween('transaksi.tanggal', [$tanggalAwal, $tanggalAkhir]);
-                }
-            })
-            ->select(
-                'jamaah.id as no',
-                'jamaah.nama',
-                DB::raw('COALESCE(SUM(detail_transaksi.persenan), 0) as persenan'),
-                DB::raw('COALESCE(SUM(detail_transaksi.jimpitan), 0) as jimpitan'),
-                DB::raw('COALESCE(SUM(detail_transaksi.dapur_pusat), 0) as dapur_pusat'),
-                DB::raw('COALESCE(SUM(detail_transaksi.shodaqah_daerah), 0) as shodaqah_daerah'),
-                DB::raw('COALESCE(SUM(detail_transaksi.shodaqah_kelompok), 0) as shodaqah_kelompok'),
-                DB::raw('COALESCE(SUM(detail_transaksi.jumlah), 0) as jumlah')
-            )
-            ->groupBy('jamaah.id', 'jamaah.nama')
-            ->orderBy('jamaah.id')
-            ->get();
+    // Join jamaah dengan subquery
+    $data = DB::table('jamaah')
+        ->leftJoinSub($filteredTransaksi, 't', function ($join) {
+            $join->on('jamaah.id', '=', 't.jamaah_id');
+        })
+        ->select(
+            'jamaah.id as no',
+            'jamaah.nama',
+            DB::raw('COALESCE(t.persenan, 0) as persenan'),
+            DB::raw('COALESCE(t.jimpitan, 0) as jimpitan'),
+            DB::raw('COALESCE(t.dapur_pusat, 0) as dapur_pusat'),
+            DB::raw('COALESCE(t.shodaqah_daerah, 0) as shodaqah_daerah'),
+            DB::raw('COALESCE(t.shodaqah_kelompok, 0) as shodaqah_kelompok'),
+            DB::raw('COALESCE(t.jumlah, 0) as jumlah')
+        )
+        ->orderBy('jamaah.id')
+        ->get();
 
         // return response()->json($data);
 
         return Excel::download(new ShodaqahExport($data, $tanggalAwal, $tanggalAkhir), 'rekap-shodaqah.xlsx');
     }
+    
     public function exportPDFDesa(Request $request)
     {
         $tanggalAwal = $request->tanggal_awal;
-        $tanggalAkhir = $request->tanggal_akhir;
+    $tanggalAkhir = $request->tanggal_akhir;
 
-        $data = DB::table('jamaah')
-            ->leftJoin('detail_transaksi', 'jamaah.id', '=', 'detail_transaksi.jamaah_id')
-            ->leftJoin('transaksi', function ($join) use ($tanggalAwal, $tanggalAkhir) {
-                $join->on('detail_transaksi.transaksi_id', '=', 'transaksi.id')
-                    ->where('transaksi.jenis', '=', 'pemasukan');
+    // Subquery: filter transaksi dan hitung total per jamaah
+    $filteredTransaksi = DB::table('detail_transaksi')
+        ->join('transaksi', 'detail_transaksi.transaksi_id', '=', 'transaksi.id')
+        ->where('transaksi.jenis', 'pemasukan')
+        ->when($tanggalAwal && $tanggalAkhir, function ($query) use ($tanggalAwal, $tanggalAkhir) {
+            $query->whereBetween('transaksi.tanggal', [$tanggalAwal, $tanggalAkhir])
+                  ->whereNotNull('transaksi.tanggal');
+        })
+        ->select(
+            'detail_transaksi.jamaah_id',
+            DB::raw('SUM(detail_transaksi.persenan) as persenan'),
+            DB::raw('SUM(detail_transaksi.jimpitan) as jimpitan'),
+            DB::raw('SUM(detail_transaksi.dapur_pusat) as dapur_pusat'),
+            DB::raw('SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN 2000 ELSE 0 END) as kk'),
+            DB::raw('SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN detail_transaksi.shodaqah_daerah - 2000 ELSE 0 END) as ppg'),
+            DB::raw('0 as zakat'),
+            DB::raw('SUM(detail_transaksi.jumlah) as jumlah')
+        )
+        ->groupBy('detail_transaksi.jamaah_id');
 
-                if ($tanggalAwal && $tanggalAkhir) {
-                    $join->whereBetween('transaksi.tanggal', [$tanggalAwal, $tanggalAkhir]);
-                }
-            })
-            ->select(
-                'jamaah.nama',
-                DB::raw('COALESCE(SUM(detail_transaksi.persenan), 0) as persenan'),
-                DB::raw('COALESCE(SUM(detail_transaksi.jimpitan), 0) as jimpitan'),
-                DB::raw('COALESCE(SUM(detail_transaksi.dapur_pusat), 0) as dapur_pusat'),
-                DB::raw('COALESCE(SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN 2000 ELSE 0 END), 0) as kk'),
-                DB::raw('COALESCE(SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN detail_transaksi.shodaqah_daerah - 2000 ELSE 0 END), 0) as ppg'),
-                DB::raw('0 as zakat'),
-                DB::raw('COALESCE(SUM(detail_transaksi.jumlah), 0) as jumlah')
-            )
-            ->groupBy('jamaah.id', 'jamaah.nama')
-            ->orderBy('jamaah.id')
-            ->get();
+    // Join jamaah dengan subquery
+    $data = DB::table('jamaah')
+        ->leftJoinSub($filteredTransaksi, 't', function ($join) {
+            $join->on('jamaah.id', '=', 't.jamaah_id');
+        })
+        ->select(
+            'jamaah.id as no',
+            'jamaah.nama',
+            DB::raw('COALESCE(t.persenan, 0) as persenan'),
+            DB::raw('COALESCE(t.jimpitan, 0) as jimpitan'),
+            DB::raw('COALESCE(t.dapur_pusat, 0) as dapur_pusat'),
+            DB::raw('COALESCE(t.kk, 0) as kk'),
+            DB::raw('COALESCE(t.ppg, 0) as ppg'),
+            DB::raw('COALESCE(t.zakat, 0) as zakat'),
+            DB::raw('COALESCE(t.jumlah, 0) as jumlah')
+        )
+        ->orderBy('jamaah.id')
+        ->get();
         // return response()->json($data);
         $pdf = app(PDF::class);
         $pdf->setPaper('a4', 'landscape');
@@ -127,32 +170,46 @@ class ExportController extends Controller
     public function exportExcelDesa(Request $request)
     {
         $tanggalAwal = $request->tanggal_awal;
-        $tanggalAkhir = $request->tanggal_akhir;
+    $tanggalAkhir = $request->tanggal_akhir;
 
-        $data = DB::table('jamaah')
-            ->leftJoin('detail_transaksi', 'jamaah.id', '=', 'detail_transaksi.jamaah_id')
-            ->leftJoin('transaksi', function ($join) use ($tanggalAwal, $tanggalAkhir) {
-                $join->on('detail_transaksi.transaksi_id', '=', 'transaksi.id')
-                    ->where('transaksi.jenis', '=', 'pemasukan');
+    // Subquery: filter transaksi dan hitung total per jamaah
+    $filteredTransaksi = DB::table('detail_transaksi')
+        ->join('transaksi', 'detail_transaksi.transaksi_id', '=', 'transaksi.id')
+        ->where('transaksi.jenis', 'pemasukan')
+        ->when($tanggalAwal && $tanggalAkhir, function ($query) use ($tanggalAwal, $tanggalAkhir) {
+            $query->whereBetween('transaksi.tanggal', [$tanggalAwal, $tanggalAkhir])
+                  ->whereNotNull('transaksi.tanggal');
+        })
+        ->select(
+            'detail_transaksi.jamaah_id',
+            DB::raw('SUM(detail_transaksi.persenan) as persenan'),
+            DB::raw('SUM(detail_transaksi.jimpitan) as jimpitan'),
+            DB::raw('SUM(detail_transaksi.dapur_pusat) as dapur_pusat'),
+            DB::raw('SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN 2000 ELSE 0 END) as kk'),
+            DB::raw('SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN detail_transaksi.shodaqah_daerah - 2000 ELSE 0 END) as ppg'),
+            DB::raw('0 as zakat'),
+            DB::raw('SUM(detail_transaksi.jumlah) as jumlah')
+        )
+        ->groupBy('detail_transaksi.jamaah_id');
 
-                if ($tanggalAwal && $tanggalAkhir) {
-                    $join->whereBetween('transaksi.tanggal', [$tanggalAwal, $tanggalAkhir]);
-                }
-            })
-            ->select(
-                'jamaah.id as no',
-                'jamaah.nama',
-                DB::raw('COALESCE(SUM(detail_transaksi.persenan), 0) as persenan'),
-                DB::raw('COALESCE(SUM(detail_transaksi.jimpitan), 0) as jimpitan'),
-                DB::raw('COALESCE(SUM(detail_transaksi.dapur_pusat), 0) as dapur_pusat'),
-                DB::raw('COALESCE(SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN 2000 ELSE 0 END), 0) as kk'),
-                DB::raw('COALESCE(SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN detail_transaksi.shodaqah_daerah - 2000 ELSE 0 END), 0) as ppg'),
-                DB::raw('0 as zakat'),
-                DB::raw('COALESCE(SUM(detail_transaksi.jumlah), 0) as jumlah')
-            )
-            ->groupBy('jamaah.id', 'jamaah.nama')
-            ->orderBy('jamaah.id')
-            ->get();
+    // Join jamaah dengan subquery
+    $data = DB::table('jamaah')
+        ->leftJoinSub($filteredTransaksi, 't', function ($join) {
+            $join->on('jamaah.id', '=', 't.jamaah_id');
+        })
+        ->select(
+            'jamaah.id as no',
+            'jamaah.nama',
+            DB::raw('COALESCE(t.persenan, 0) as persenan'),
+            DB::raw('COALESCE(t.jimpitan, 0) as jimpitan'),
+            DB::raw('COALESCE(t.dapur_pusat, 0) as dapur_pusat'),
+            DB::raw('COALESCE(t.kk, 0) as kk'),
+            DB::raw('COALESCE(t.ppg, 0) as ppg'),
+            DB::raw('COALESCE(t.zakat, 0) as zakat'),
+            DB::raw('COALESCE(t.jumlah, 0) as jumlah')
+        )
+        ->orderBy('jamaah.id')
+        ->get();
 
         // return response()->json($data);
 
