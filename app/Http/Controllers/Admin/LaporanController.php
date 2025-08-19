@@ -128,6 +128,7 @@ class LaporanController extends Controller
             'flash' => ['message' => session('message')]
         ]);
     }
+    
     public function rekapTabungan(Request $request)
     {
         if ($request->wantsJson()) {

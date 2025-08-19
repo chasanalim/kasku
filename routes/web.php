@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\JamaahController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\ShodaqahController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PemasukanController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\UserAdminController;
@@ -24,9 +25,12 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/dashboard', function () {
-        return Inertia::render('Admin/Dashboard/Dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return Inertia::render('Admin/Dashboard/Dashboard');
+    // })->name('dashboard');
+
+    Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+    
     Route::resource('user', UserAdminController::class);
     Route::resource('privileges', PrivilegesController::class);
 
