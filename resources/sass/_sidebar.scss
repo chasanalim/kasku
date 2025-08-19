@@ -668,3 +668,21 @@ tbody tr:hover td {
 #basic-nav-dropdown {
     border-radius: 0.6rem;
 }
+
+@media (max-width: 991.98px) {
+    .sidebar {
+        margin-left: -280px; /* Start hidden on mobile */
+    }
+    
+    .main-content {
+        margin-left: 0px;
+    }
+    
+    #main:not(.activesidebar) .sidebar {
+        margin-left: 0px; /* Show when toggled */
+    }
+    
+    #main:not(.activesidebar) .main-content {
+        margin-left: 280px;
+    }
+}

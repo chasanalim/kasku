@@ -1,11 +1,32 @@
 import { Link, usePage } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import Dropdown from "@/Components/Dropdown";
 import { Nav, NavDropdown } from "react-bootstrap";
 import classNames from "classnames";
 
 export default function Navbar(props) {
     const { auth } = usePage().props;
+
+    // Add useEffect to handle initial sidebar state
+    useEffect(() => {
+        const handleResize = () => {
+            const main = document.getElementById("main");
+            if (window.innerWidth <= 991.98) {
+                main.classList.add("activesidebar");
+            } else {
+                main.classList.remove("activesidebar");
+            }
+        };
+
+        // Set initial state
+        handleResize();
+
+        // Add resize listener
+        window.addEventListener("resize", handleResize);
+
+        // Cleanup
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     const activesidebar = () => {
         const main = document.getElementById("main");
