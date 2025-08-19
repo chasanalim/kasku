@@ -67,9 +67,9 @@ class HandleInertiaRequests extends Middleware
                 'deletePemasukan' => $request->user()->can('delete-pemasukan'),
 
                 'viewPengeluaran' => $request->user()->can('view-pengeluaran'),
-                'createPengeluaran' => $request->user()->can('add-pengeluaram\n'),
-                'editPengeluaran' => $request->user()->can('edit-pengeluaram\n'),
-                'deletePengeluaran' => $request->user()->can('delete-pengeluaram\n'),
+                'createPengeluaran' => $request->user()->can('add-pengeluaran'),
+                'editPengeluaran' => $request->user()->can('edit-pengeluaran'),
+                'deletePengeluaran' => $request->user()->can('delete-pengeluaran'),
 
                 'viewLaporan' => $request->user()->can('view-laporan'),
                 'createLaporan' => $request->user()->can('add-laporan'),
