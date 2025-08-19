@@ -415,6 +415,15 @@ export default function Index({ title, flash, tabungan, can }) {
                                                 {selectedIds.length})
                                             </button>
                                         </div>
+                                        <div className="col-auto">
+                                            <button
+                                                className="btn btn-sm btn-secondary mt-2 me-2"
+                                                onClick={() => router.visit(route('admin.laporan.rekap-tabungan'))}
+                                            >
+                                                <i class="bi bi-file-earmark-spreadsheet me-1"></i>
+                                                Laporan
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="table-responsive">

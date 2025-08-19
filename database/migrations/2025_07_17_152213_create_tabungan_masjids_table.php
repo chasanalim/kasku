@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('akun_id')->constrained('akun_rekening')->onDelete('cascade');
             $table->date('tanggal');
-            $table->foreignId('jamaah_id')->constrained('jamaah')->onDelete('cascade')->nullable();
+            $table->foreignId('jamaah_id')->constrained('master_tabungan')->onDelete('cascade')->nullable();
             $table->decimal('jumlah', 15, 2)->default(0)->nullable();
             $table->string('keterangan');
             $table->boolean('status')->default(0);

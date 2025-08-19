@@ -57,7 +57,7 @@ class TabunganMasjidController extends Controller
     public function create()
     {
         $jamaah = MasterTabungan::where('status', 1)
-            ->orderBy('nama', 'asc')
+            ->orderBy('id', 'asc')
             ->get();
         return Inertia::render('Admin/TabunganMasjid/Create', [
             'title' => 'Tambah Tabungan Masjid Jamaah',
@@ -112,7 +112,7 @@ class TabunganMasjidController extends Controller
      */
     public function edit(string $id)
     {
-        $jamaah = Jamaah::all();
+        $jamaah = MasterTabungan::all();
         $tabungan = TabunganMasjid::with(['akun', 'jamaah'])
             ->findOrFail($id);
         // return response()->json($tabungan);
@@ -171,7 +171,7 @@ class TabunganMasjidController extends Controller
     {
         $request->validate([
             'ids' => 'required|array',
-            'ids.*' => 'exists:detail_transaksi,id'
+            'ids.*' => 'exists:tabungan_masjid,id'
         ]);
 
         DB::beginTransaction();

@@ -131,7 +131,7 @@ class LaporanController extends Controller
     public function rekapTabungan(Request $request)
     {
         if ($request->wantsJson()) {
-            $data = DB::table('jamaah')
+            $data = DB::table('master_tabungan')
                 ->leftJoin(DB::raw('(
                     SELECT 
                         jamaah_id,
@@ -139,19 +139,19 @@ class LaporanController extends Controller
                     FROM tabungan_masjid
                     WHERE status = 1
                     GROUP BY jamaah_id
-                ) as tm'), 'jamaah.id', '=', 'tm.jamaah_id')
+                ) as tm'), 'master_tabungan.id', '=', 'tm.jamaah_id')
                 ->select(
-                    'jamaah.id as jamaah_id',
-                    'jamaah.nama',
-                    'jamaah.jatah',
+                    'master_tabungan.id as jamaah_id',
+                    'master_tabungan.nama',
+                    'master_tabungan.jatah',
                     DB::raw('COALESCE(tm.total_tabungan, 0) as total_tabungan'),
                     DB::raw('CASE 
-                        WHEN jamaah.jatah > 0 
-                        THEN ROUND((COALESCE(tm.total_tabungan, 0) / jamaah.jatah) * 100, 2)
+                        WHEN master_tabungan.jatah > 0 
+                        THEN ROUND((COALESCE(tm.total_tabungan, 0) / master_tabungan.jatah) * 100, 2)
                         ELSE 0 
                     END as percentage')
                 )
-                ->orderBy('jamaah.id', 'asc');
+                ->orderBy('master_tabungan.id', 'asc');
 
             return DataTables::of($data)
                 ->addIndexColumn()
