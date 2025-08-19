@@ -11,6 +11,7 @@ use App\Models\TabunganMasjid;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\MasterTabungan;
 
 class TabunganMasjidController extends Controller
 {
@@ -55,7 +56,9 @@ class TabunganMasjidController extends Controller
      */
     public function create()
     {
-        $jamaah = Jamaah::all();
+        $jamaah = MasterTabungan::where('status', 1)
+            ->orderBy('nama', 'asc')
+            ->get();
         return Inertia::render('Admin/TabunganMasjid/Create', [
             'title' => 'Tambah Tabungan Masjid Jamaah',
             'jamaah' => $jamaah,
@@ -135,7 +138,7 @@ class TabunganMasjidController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $id) {
-            
+
         });
 
         return redirect()->route('admin.tabungan.index')

@@ -1,20 +1,22 @@
 <?php
 
 use Inertia\Inertia;
+use App\Models\MasterTabungan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AkunController;
 use App\Http\Controllers\Admin\InfaqController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\JamaahController;
-use App\Http\Controllers\Admin\KasKelompokController;
 use App\Http\Controllers\Admin\LaporanController;
-use App\Http\Controllers\Admin\PemasukanController;
-use App\Http\Controllers\Admin\PengeluaranController;
 use App\Http\Controllers\Admin\ShodaqahController;
+use App\Http\Controllers\Admin\PemasukanController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Admin\PrivilegesController;
+use App\Http\Controllers\Admin\KasKelompokController;
+use App\Http\Controllers\Admin\PengeluaranController;
+use App\Http\Controllers\Admin\MasterTabunganController;
 use App\Http\Controllers\Admin\TabunganMasjidController;
 
 Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
@@ -30,13 +32,14 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
 
     //BARU
     Route::resource('jamaah', JamaahController::class);
+    Route::resource('mastertabungan', MasterTabunganController::class);
     Route::resource('akun', AkunController::class);
     Route::resource('transaksi', TransaksiController::class);
     Route::resource('shodaqah', ShodaqahController::class);
     Route::post('shodaqah/verify/{id}', [ShodaqahController::class, 'verify'])->name('shodaqah.verify');
     Route::post('shodaqah/verify-multiple', [ShodaqahController::class, 'verifyMultiple'])->name('shodaqah.verify-multiple');
     Route::delete('shodaqah/destroy-multiple', [ShodaqahController::class, 'destroyMultiple'])->name('shodaqah.destroy-multiple');
-    
+
     Route::resource('infaq', InfaqController::class);
     Route::post('infaq/verify/{id}', [InfaqController::class, 'verify'])->name('infaq.verify');
     Route::post('infaq/verify-multiple', [InfaqController::class, 'verifyMultiple'])->name('infaq.verify-multiple');
@@ -53,7 +56,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::post('pengeluaran/verify/{id}', [PengeluaranController::class, 'verify'])->name('pengeluaran.verify');
     Route::post('pengeluaran/verify-multiple', [PengeluaranController::class, 'verifyMultiple'])->name('pengeluaran.verify-multiple');
     Route::delete('pengeluaran/destroy-multiple', [PengeluaranController::class, 'destroyMultiple'])->name('pengeluaran.destroy-multiple');
-    
+
     Route::resource('pemasukan', PemasukanController::class);
     Route::post('pemasukan/verify/{id}', [PemasukanController::class, 'verify'])->name('pemasukan.verify');
     Route::post('pemasukan/verify-multiple', [PemasukanController::class, 'verifyMultiple'])->name('pemasukan.verify-multiple');
@@ -68,7 +71,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('shodaqah/export/excel', [ExportController::class, 'exportExcel'])->name('shodaqah.export.excel');
     Route::get('shodaqah-desa/export/pdf', [ExportController::class, 'exportPDFDesa'])->name('shodaqah-desa.export.pdf');
     Route::get('shodaqah-desa/export/excel', [ExportController::class, 'exportExcelDesa'])->name('shodaqah-desa.export.excel');
-    
+
     Route::get('laporan/export/pdf', [ExportController::class, 'exportPDFlaporan'])->name('laporan.export.pdf');
 
     Route::resource('tabungan', TabunganMasjidController::class);

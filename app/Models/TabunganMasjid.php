@@ -23,6 +23,6 @@ class TabunganMasjid extends Model
 
     public function jamaah()
     {
-        return $this->belongsTo(Jamaah::class, 'jamaah_id');
+        return $this->belongsTo(MasterTabungan::class, 'jamaah_id');
     }
 }

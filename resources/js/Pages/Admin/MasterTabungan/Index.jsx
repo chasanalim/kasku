@@ -17,7 +17,7 @@ export default function Index({ title, can, flash }) {
             serverSide: true,
             responsive: true,
             ajax: {
-                url: route("admin.jamaah.index"),
+                url: route("admin.mastertabungan.index"),
                 type: "GET",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
@@ -71,21 +71,21 @@ export default function Index({ title, can, flash }) {
                     orderable: true,
                     searchable: true,
                 },
-                {
-                    data: "kategori",
-                    name: "kategori",
-                    orderable: true,
-                    searchable: true,
-                },
                 // {
-                //     data: "jatah",
-                //     name: "jatah",
+                //     data: "kategori",
+                //     name: "kategori",
                 //     orderable: true,
                 //     searchable: true,
-                //     render: function (data) {
-                //         return Number(data).toLocaleString("id-ID");
-                //     },
                 // },
+                {
+                    data: "jatah",
+                    name: "jatah",
+                    orderable: true,
+                    searchable: true,
+                    render: function (data) {
+                        return Number(data).toLocaleString("id-ID");
+                    },
+                },
                 {
                     data: "status",
                     name: "status",
@@ -154,7 +154,7 @@ export default function Index({ title, can, flash }) {
                                 <h5 className="mb-2 fw-bold">{title}</h5>
                                 {can.createMaster && (
                                     <Link
-                                        href={route("admin.jamaah.create")}
+                                        href={route("admin.mastertabungan.create")}
                                         className="btn btn-primary mb-3"
                                     >
                                         <i className="bi bi-plus-circle me-2"></i>
@@ -173,8 +173,8 @@ export default function Index({ title, can, flash }) {
                                                 <th>No</th>
                                                 <th>Aksi</th>
                                                 <th>NAMA LENGKAP</th>
-                                                <th>KATEGORI</th>
-                                                {/* <th>JATAH</th> */}
+                                                {/* <th>KATEGORI</th> */}
+                                                <th>JATAH</th>
                                                 <th>STATUS</th>
                                             </tr>
                                         </thead>

@@ -550,6 +550,26 @@ export default function Sidebar() {
                                         </span>
                                     </NavLink>
                                 </li>
+                                <li>
+                                    <NavLink
+                                        href={route("admin.mastertabungan.index")}
+                                        active={route().current(
+                                            "admin.mastertabungan.index"
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.mastertabungan.index"
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-person-fill-lock fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Data Master Tabungan
+                                        </span>
+                                    </NavLink>
+                                </li>
 
                                 <li>
                                     <NavLink
