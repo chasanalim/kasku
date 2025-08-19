@@ -346,13 +346,15 @@ export default function Index({ title, flash, infaq, can }) {
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-2 fw-bold">{title}</h5>
-                                <Link
-                                    href={route("admin.pemasukan.create")}
-                                    className="btn btn-sm btn-primary mb-3 "
-                                >
-                                    <i className="bi bi-plus-circle me-2"></i>
-                                    Tambah Pengeluaran Kas
-                                </Link>
+                                {can.createPemasukan && (
+                                    <Link
+                                        href={route("admin.pemasukan.create")}
+                                        className="btn btn-sm btn-primary mb-3 "
+                                    >
+                                        <i className="bi bi-plus-circle me-2"></i>
+                                        Tambah Pengeluaran Kas
+                                    </Link>
+                                )}
                             </div>
                             <div className="card-body">
                                 <div className="mb-4">

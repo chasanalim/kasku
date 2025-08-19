@@ -437,13 +437,16 @@ export default function Index({ title, flash, shodaqah, can }) {
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-2 fw-bold">{title}</h5>
-                                <Link
-                                    href={route("admin.shodaqah.create")}
-                                    className="btn btn-sm btn-primary mb-3"
-                                >
-                                    <i className="bi bi-plus-circle me-2"></i>
-                                    Tambah Data Shodaqah
-                                </Link>
+
+                                {can.createPemasukan && (
+                                    <Link
+                                        href={route("admin.shodaqah.create")}
+                                        className="btn btn-sm btn-primary mb-3"
+                                    >
+                                        <i className="bi bi-plus-circle me-2"></i>
+                                        Tambah Data Shodaqah
+                                    </Link>
+                                )}
                             </div>
                             <div className="card-body">
                                 <div className="mb-4">

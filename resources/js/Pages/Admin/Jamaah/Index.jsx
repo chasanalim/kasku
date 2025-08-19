@@ -8,7 +8,7 @@ import { Toast, Tooltip } from "bootstrap";
 // Import bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-export default function Index({ title, flash }) {
+export default function Index({ title, can, flash }) {
     const tableRef = useRef();
 
     useEffect(() => {
@@ -41,16 +41,16 @@ export default function Index({ title, flash }) {
                     render: function (data) {
                         let buttons = [];
 
-                        // if (can.edit) {
-                        buttons.push(`
+                        if (can.editMaster) {
+                            buttons.push(`
                                 <a href="${data.edit_url}" class="btn btn-sm btn-warning" title="Edit">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                             `);
-                        // }
+                        }
 
-                        // if (can.delete) {
-                        buttons.push(`
+                        if (can.deleteMaster) {
+                            buttons.push(`
                                 <a href="javascript:void(0)"
                                    onclick="deleteItem('${data.delete_url}')"
                                    class="btn btn-sm btn-danger"
@@ -58,7 +58,7 @@ export default function Index({ title, flash }) {
                                     <i class="bi bi-trash"></i>
                                 </a>
                             `);
-                        // }
+                        }
 
                         return `<div class="btn-group">${buttons.join(
                             ""
@@ -84,7 +84,7 @@ export default function Index({ title, flash }) {
                     searchable: true,
                     render: function (data) {
                         return Number(data).toLocaleString("id-ID");
-                    }
+                    },
                 },
                 {
                     data: "status",
@@ -152,13 +152,15 @@ export default function Index({ title, flash }) {
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-2 fw-bold">{title}</h5>
-                                <Link
-                                    href={route("admin.jamaah.create")}
-                                    className="btn btn-primary mb-3"
-                                >
-                                    <i className="bi bi-plus-circle me-2"></i>
-                                    Tambah Personal
-                                </Link>
+                                {can.createMaster && (
+                                    <Link
+                                        href={route("admin.jamaah.create")}
+                                        className="btn btn-primary mb-3"
+                                    >
+                                        <i className="bi bi-plus-circle me-2"></i>
+                                        Tambah Personal
+                                    </Link>
+                                )}
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">

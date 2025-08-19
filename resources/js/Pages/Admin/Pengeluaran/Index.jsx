@@ -145,7 +145,7 @@ export default function Index({ title, flash, infaq, can }) {
                             `);
                             }
 
-                            if (can.editPemasukan) {
+                            if (can.editPengeluaran) {
                                 buttons.push(`
                                 <a href="${data.edit_url}" class="btn btn-sm btn-info" title="Edit">
                                     <i class="bi bi-pencil-square"></i>
@@ -153,7 +153,7 @@ export default function Index({ title, flash, infaq, can }) {
                             `);
                             }
 
-                            if (can.deletePemasukan) {
+                            if (can.deletePengeluaran) {
                                 buttons.push(`
                                 <a href="javascript:void(0)"
                                    onclick="deleteItem('${data.delete_url}')"
@@ -346,13 +346,15 @@ export default function Index({ title, flash, infaq, can }) {
                         <div className="card">
                             <div className="card-header pb-0 d-flex justify-content-between align-items-center">
                                 <h5 className="mb-2 fw-bold">{title}</h5>
-                                <Link
-                                    href={route("admin.pengeluaran.create")}
-                                    className="btn btn-sm btn-primary mb-3 "
-                                >
-                                    <i className="bi bi-plus-circle me-2"></i>
-                                    Tambah Pengeluaran Kas
-                                </Link>
+                                {can.createPengeluaran && (
+                                    <Link
+                                        href={route("admin.pengeluaran.create")}
+                                        className="btn btn-sm btn-primary mb-3 "
+                                    >
+                                        <i className="bi bi-plus-circle me-2"></i>
+                                        Tambah Pengeluaran Kas
+                                    </Link>
+                                )}
                             </div>
                             <div className="card-body">
                                 <div className="mb-4">
