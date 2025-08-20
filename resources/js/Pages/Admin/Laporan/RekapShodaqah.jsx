@@ -10,6 +10,8 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 export default function RekapShodaqah({ title, flash, shodaqah, can }) {
     const tableRef = useRef();
+    const [sudahSetor, setSudahSetor] = useState(0);
+    const [totalJamaah, setTotalJamaah] = useState(0);
 
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 2)
@@ -45,7 +47,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
             tanggal_awal: tanggalAwal,
             tanggal_akhir: tanggalAkhir,
         });
-        window.open(url, '_blank');
+        window.open(url, "_blank");
     };
 
     useEffect(() => {
@@ -96,7 +98,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     data: "persenan",
                     name: "persenan",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -106,7 +108,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "jimpitan",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -116,7 +118,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "dapur_pusat",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -126,7 +128,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "shodaqah_daerah",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -136,7 +138,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "shodaqah_kelompok",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -146,7 +148,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "jumlah",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -160,7 +162,19 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     searchable: false,
                 },
             ],
-            drawCallback: function () {
+            drawCallback: function (settings) {
+                // Count total and submitted jamaah
+                const api = this.api();
+                const pageData = api.rows({ page: "current" }).data();
+
+                const total = pageData.length;
+                const submitted = pageData.filter(
+                    (row) => row.status === "Sudah Setor"
+                ).length;
+
+                setTotalJamaah(total);
+                setSudahSetor(submitted);
+
                 // Initialize tooltips
                 const tooltips = document.querySelectorAll(
                     '[data-bs-toggle="tooltip"]'
@@ -277,11 +291,42 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
 
     window.deleteItem = deleteItem;
 
+    // Add progress calculation
+    const progressPercentage =
+        totalJamaah > 0 ? Math.round((sudahSetor / totalJamaah) * 100) : 0;
+
     return (
         <AdminLayout>
             <Head title={title} />
-
             <div className="container-fluid py-4">
+                {/* Add Status Card */}
+                <div className="row mb-2">
+                    <div className="col-12 col-md-6 col-lg-4">
+                        <div className="card border-0 shadow-sm">
+                            <div className="card-body">
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 className="text-muted mb-1">
+                                            Progress Setoran
+                                        </h6>
+                                        <h4 className="mb-0 fw-bold">
+                                            {sudahSetor} / {totalJamaah} Jamaah
+                                        </h4>
+                                    </div>
+                                    <div className="p-3 bg-success bg-opacity-10 rounded-3">
+                                        <i className="bi bi-people-fill text-success fs-4"></i>
+                                    </div>
+                                </div>
+                                <small className="text-muted d-block">
+                                    {progressPercentage}% sudah melakukan
+                                    setoran
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Existing Table Card */}
                 <div className="row">
                     <div className="col-12">
                         <div className="card">

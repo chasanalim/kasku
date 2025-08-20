@@ -30,7 +30,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     // })->name('dashboard');
 
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-    
+
     Route::resource('user', UserAdminController::class);
     Route::resource('privileges', PrivilegesController::class);
 
@@ -55,6 +55,8 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('buku-besar', [LaporanController::class, 'bukuBesar'])->name('buku-besar');
     Route::get('jurnal', [LaporanController::class, 'jurnal'])->name('jurnal');
     Route::get('rekap-tabungan-masjid', [LaporanController::class, 'rekapTabungan'])->name('laporan.rekap-tabungan');
+    Route::get('laporan/tabungan-detail', [LaporanController::class, 'getTabunganDetail'])
+        ->name('laporan.tabungan-detail');
 
     Route::resource('pengeluaran', PengeluaranController::class);
     Route::post('pengeluaran/verify/{id}', [PengeluaranController::class, 'verify'])->name('pengeluaran.verify');
@@ -82,8 +84,6 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::post('tabungan/verify/{id}', [TabunganMasjidController::class, 'verify'])->name('tabungan.verify');
     Route::post('tabungan/verify-multiple', [TabunganMasjidController::class, 'verifyMultiple'])->name('tabungan.verify-multiple');
     Route::delete('tabungan/destroy-multiple', [TabunganMasjidController::class, 'destroyMultiple'])->name('tabungan.destroy-multiple');
-
-
 });
 
 require __DIR__ . '/auth.php';

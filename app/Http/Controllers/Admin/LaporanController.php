@@ -62,6 +62,13 @@ class LaporanController extends Controller
                     return "<span class='badge bg-{$class}'>{$row->status}</span>";
                 })
                 ->rawColumns(['status_format'])
+                ->with([
+                    'recordsTotal' => DB::table('jamaah')->count(),
+                    'recordsSubmitted' => DB::table('jamaah')
+                        ->leftJoin(DB::raw('(SELECT DISTINCT jamaah_id FROM detail_transaksi) as dt'), 'jamaah.id', '=', 'dt.jamaah_id')
+                        ->whereNotNull('dt.jamaah_id')
+                        ->count()
+                ])
                 ->make(true);
         }
 
@@ -128,7 +135,7 @@ class LaporanController extends Controller
             'flash' => ['message' => session('message')]
         ]);
     }
-    
+
     public function rekapTabungan(Request $request)
     {
         if ($request->wantsJson()) {
@@ -167,7 +174,7 @@ class LaporanController extends Controller
                     } else {
                         $class = 'danger';     // Merah: < 50%
                     }
-                    return "<span class='badge bg-{$class}'>{$percentage}%</span>";
+                    return "<button class='button button-sm rounded bg-{$class}'>{$percentage}%</button>";
                 })
                 ->rawColumns(['percentage_format'])
                 ->make(true);
@@ -333,5 +340,19 @@ class LaporanController extends Controller
             'title' => 'Laporan Posting Jurnal',
             'flash' => ['message' => session('message')]
         ]);
+    }
+
+    // Add this new method in LaporanController
+    public function getTabunganDetail(Request $request)
+    {
+        $jamaahId = $request->jamaah_id;
+
+        $details = DB::table('tabungan_masjid')
+            ->where('jamaah_id', $jamaahId)
+            ->where('status', 1)
+            ->orderBy('tanggal', 'desc')
+            ->get(['tanggal', 'jumlah']);
+
+        return response()->json($details);
     }
 }

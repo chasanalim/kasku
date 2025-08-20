@@ -45,7 +45,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
             tanggal_awal: tanggalAwal,
             tanggal_akhir: tanggalAkhir,
         });
-        window.open(url, '_blank');
+        window.open(url, "_blank");
     };
 
     useEffect(() => {
@@ -96,7 +96,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     data: "persenan",
                     name: "persenan",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -106,7 +106,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "jimpitan",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -116,7 +116,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "dapur_pusat",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -126,7 +126,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "kk",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -136,7 +136,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "ppg",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -146,7 +146,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "zakat",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
@@ -156,7 +156,7 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     name: "jumlah",
                     className: "text-center",
                     orderable: true,
-                    searchable: true,
+                    searchable: false,
                     render: function (data) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
