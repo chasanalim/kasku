@@ -25,8 +25,16 @@ class TabunganMasjidController extends Controller
             ->get();
         // return response()->json($tabungan);
         if ($request->wantsJson()) {
-            $data = TabunganMasjid::with(['akun', 'jamaah'])
-                ->where('tanggal', '>=', $request->tanggal_awal ?? now()->startOfMonth())
+            if ($request->tanggal_awal && $request->tanggal_akhir) {
+                $data = TabunganMasjid::with(['akun', 'jamaah'])
+                    ->orderBy('id', 'desc')
+                    ->whereBetween('tanggal', [
+                        $request->tanggal_awal,
+                        $request->tanggal_akhir
+                    ]);
+            }
+
+            $data = $data ?? TabunganMasjid::with(['akun', 'jamaah'])
                 ->orderBy('id', 'desc');
 
             return DataTables::of($data)

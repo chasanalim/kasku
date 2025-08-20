@@ -37,14 +37,56 @@ export default function Navbar(props) {
     const currentRoute = route().current();
     const getActiveMenu = () => {
         switch (true) {
-            case currentRoute.startsWith("admin.downloads"):
-                return "Panduan Lampiran File";
-            case currentRoute.startsWith("admin.users"):
-                return "Users";
+            // Dashboard
             case currentRoute.startsWith("admin.dashboard"):
                 return "Dashboard";
-            case currentRoute.startsWith("admin.banmod-lama"):
-                return "Penerima Banmod Lama";
+
+            // Master Data
+            case currentRoute.startsWith("admin.jamaah"):
+                return "Data Jamaah";
+            case currentRoute.startsWith("admin.mastertabungan"):
+                return "Master Tabungan";
+            case currentRoute.startsWith("admin.akun"):
+                return "Akun Rekening";
+            case currentRoute.startsWith("admin.user"):
+                return "Users";
+            case currentRoute.startsWith("admin.privileges"):
+                return "Hak Akses";
+
+            // Transaksi
+            case currentRoute.startsWith("admin.transaksi"):
+                return "Transaksi";
+            case currentRoute.startsWith("admin.shodaqah"):
+                return "Amplop IR";
+            case currentRoute.startsWith("admin.infaq"):
+                return "Infaq Pengajian dan Sholat Jumat";
+            case currentRoute.startsWith("admin.pemasukan"):
+                return "Pemasukan";
+            case currentRoute.startsWith("admin.pengeluaran"):
+                return "Pengeluaran";
+            case currentRoute.startsWith("admin.kaskelompok"):
+                return "Kas Kelompok";
+            case currentRoute.startsWith("admin.tabungan"):
+                return "Tabungan Masjid";
+
+            // Laporan
+            case currentRoute.startsWith("admin.laporan.rekap-shodaqah-desa"):
+                return "Rekap Shodaqah Desa";
+            case currentRoute.startsWith("admin.laporan.rekap-shodaqah"):
+                return "Rekap Shodaqah";
+            case currentRoute.startsWith("admin.laporan.rekap-tabungan"):
+                return "Rekap Tabungan Masjid";
+            case currentRoute.startsWith("admin.laporan"):
+                return "Laporan";
+            case currentRoute.startsWith("admin.buku-besar"):
+                return "Buku Besar";
+            case currentRoute.startsWith("admin.jurnal"):
+                return "Posting Jurnal";
+
+            // Profile
+            case currentRoute.startsWith("admin.profile"):
+                return "Profile";
+
             default:
                 return "";
         }

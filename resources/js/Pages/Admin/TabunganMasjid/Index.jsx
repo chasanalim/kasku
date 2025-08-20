@@ -420,7 +420,7 @@ export default function Index({ title, flash, tabungan, can }) {
                                                 className="btn btn-sm btn-secondary mt-2 me-2"
                                                 onClick={() => router.visit(route('admin.laporan.rekap-tabungan'))}
                                             >
-                                                <i class="bi bi-file-earmark-spreadsheet me-1"></i>
+                                                <i className="bi bi-file-earmark-spreadsheet me-1"></i>
                                                 Laporan
                                             </button>
                                         </div>
