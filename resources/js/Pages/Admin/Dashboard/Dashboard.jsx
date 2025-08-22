@@ -63,6 +63,8 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
         return {
             accessibility: {
                 enabled: false,
+                description:
+                    "Chart menampilkan perbandingan pemasukan dan pengeluaran kas kelompok",
             },
             chart: {
                 type: "column",
@@ -171,6 +173,8 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
         return {
             accessibility: {
                 enabled: false,
+                description:
+                    "Chart menampilkan perbandingan uang masuk dan keluar tabungan masjid",
             },
             chart: {
                 type: "column",

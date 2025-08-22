@@ -1,11 +1,14 @@
 import "./bootstrap";
 import "../css/app.css";
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import "bootstrap/dist/js/bootstrap.bundle.min.js";
-// import "@fortawesome/fontawesome-free/css/all.min.css";
-// import "bootstrap-icons/font/bootstrap-icons.css";
-import axios from "axios";
 
+// // Add these imports
+// import Highcharts from "highcharts";
+// import HighchartsAccessibility from "highcharts/modules/accessibility";
+
+// // Initialize the accessibility module
+// HighchartsAccessibility(Highcharts);
+
+import axios from "axios";
 
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
