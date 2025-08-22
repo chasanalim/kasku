@@ -5,6 +5,11 @@ import "../css/app.css";
 // import "@fortawesome/fontawesome-free/css/all.min.css";
 // import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
+import Highcharts from 'highcharts';
+import Accessibility from 'highcharts/modules/accessibility';
+
+// Inisialisasi modul
+Accessibility(Highcharts);
 
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
