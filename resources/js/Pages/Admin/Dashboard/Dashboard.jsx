@@ -55,13 +55,15 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
 
         return chartData;
     };
-    
 
     // Prepare chart options dengan data yang sudah disinkronkan
     const chartOptions = useMemo(() => {
         const chartData = processChartData();
 
         return {
+            accessibility: {
+                enabled: false,
+            },
             chart: {
                 type: "column",
                 height: 400,
@@ -167,6 +169,9 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
         const chartData = processChartDataTabungan();
 
         return {
+            accessibility: {
+                enabled: false,
+            },
             chart: {
                 type: "column",
                 height: 400,
@@ -435,7 +440,7 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
                                                 className={`fw-semi-bold ms-1 ${
                                                     tabungan.summary
                                                         .persentase_uang_masuk >=
-                                                80
+                                                    80
                                                         ? "text-success"
                                                         : "text-danger"
                                                 }`}
