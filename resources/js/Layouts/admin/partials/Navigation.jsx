@@ -126,7 +126,7 @@ export default function Navbar(props) {
                                 href={route("logout")}
                                 preserveScroll
                                 onSuccess={() => {
-                                    window.location.href = "/";
+                                    window.location.href = "";
                                 }}
                             >
                                 <span>Logout</span>

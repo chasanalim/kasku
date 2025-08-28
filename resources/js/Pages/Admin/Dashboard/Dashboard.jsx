@@ -1,8 +1,26 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head } from "@inertiajs/react";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import { Bar } from "react-chartjs-2";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from "chart.js";
 import { useMemo } from "react";
+
+// Register ChartJS components
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 export default function Dashboard({ kas_kelompok, tabungan }) {
     const formatCurrency = (number) => {
@@ -56,71 +74,64 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
         return chartData;
     };
 
-    // Prepare chart options dengan data yang sudah disinkronkan
+    // Replace Highcharts options with Chart.js options
     const chartOptions = useMemo(() => {
         const chartData = processChartData();
 
         return {
-            accessibility: {
-                enabled: false,
-                description:
-                    "Chart menampilkan perbandingan pemasukan dan pengeluaran kas kelompok",
-            },
-            chart: {
-                type: "column",
-                height: 400,
-                backgroundColor: "transparent",
-            },
-            title: {
-                text: "Pemasukan & Pengeluaran Kas Kelompok",
-                style: {
-                    fontSize: "18px",
-                    fontWeight: "600",
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "top",
                 },
-            },
-            xAxis: {
-                categories: chartData.map(
-                    (item) => `${item.nama_bulan} ${item.tahun}`
-                ),
-                labels: {
-                    style: {
-                        fontSize: "12px",
-                    },
-                },
-            },
-            yAxis: {
                 title: {
-                    text: "Jumlah (IDR)",
-                    style: {
-                        fontSize: "12px",
-                    },
-                },
-                labels: {
-                    formatter: function () {
-                        return formatCurrency(this.value).replace("Rp", "");
+                    display: true,
+                    text: "Pemasukan & Pengeluaran Kas Kelompok",
+                    font: {
+                        size: 18,
+                        weight: "600",
                     },
                 },
             },
-            series: [
-                {
-                    name: "Pemasukan",
-                    data: chartData.map((item) => item.pemasukan),
-                    color: "#198754",
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function (value) {
+                            return formatCurrency(value).replace("Rp", "");
+                        },
+                    },
+                    title: {
+                        display: true,
+                        text: "Jumlah (IDR)",
+                    },
                 },
-                {
-                    name: "Pengeluaran",
-                    data: chartData.map((item) => item.pengeluaran),
-                    color: "#dc3545",
-                },
-            ],
-            credits: {
-                enabled: false,
             },
-            plotOptions: {
-                column: {
+        };
+    }, []);
+
+    const chartData = useMemo(() => {
+        const data = processChartData();
+
+        return {
+            labels: data.map((item) => `${item.nama_bulan} ${item.tahun}`),
+            datasets: [
+                {
+                    label: "Pemasukan",
+                    data: data.map((item) => item.pemasukan),
+                    backgroundColor: "rgba(25, 135, 84, 0.8)",
+                    borderColor: "rgb(25, 135, 84)",
+                    borderWidth: 1,
                     borderRadius: 5,
                 },
-            },
+                {
+                    label: "Pengeluaran",
+                    data: data.map((item) => item.pengeluaran),
+                    backgroundColor: "rgba(220, 53, 69, 0.8)",
+                    borderColor: "rgb(220, 53, 69)",
+                    borderWidth: 1,
+                    borderRadius: 5,
+                },
+            ],
         };
     }, [kas_kelompok]);
 
@@ -167,70 +178,62 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
         return chartData;
     };
 
+    // Tabungan chart options and data
     const chartTabunganOptions = useMemo(() => {
-        const chartData = processChartDataTabungan();
+        return {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "top",
+                },
+                title: {
+                    display: true,
+                    text: "Uang Masuk dan Setor Tabungan Masjid Daerah",
+                    font: {
+                        size: 18,
+                        weight: "600",
+                    },
+                },
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function (value) {
+                            return formatCurrency(value).replace("Rp", "");
+                        },
+                    },
+                    title: {
+                        display: true,
+                        text: "Jumlah (IDR)",
+                    },
+                },
+            },
+        };
+    }, []);
+
+    const chartTabunganData = useMemo(() => {
+        const data = processChartDataTabungan();
 
         return {
-            accessibility: {
-                enabled: false,
-                description:
-                    "Chart menampilkan perbandingan uang masuk dan keluar tabungan masjid",
-            },
-            chart: {
-                type: "column",
-                height: 400,
-                backgroundColor: "transparent",
-            },
-            title: {
-                text: "Uang Masuk dan Setor Tabungan Masjid Daerah",
-                style: {
-                    fontSize: "18px",
-                    fontWeight: "600",
-                },
-            },
-            xAxis: {
-                categories: chartData.map(
-                    (item) => `${item.nama_bulan} ${item.tahun}`
-                ),
-                labels: {
-                    style: {
-                        fontSize: "12px",
-                    },
-                },
-            },
-            yAxis: {
-                title: {
-                    text: "Jumlah (IDR)",
-                    style: {
-                        fontSize: "12px",
-                    },
-                },
-                labels: {
-                    formatter: function () {
-                        return formatCurrency(this.value).replace("Rp", "");
-                    },
-                },
-            },
-            series: [
+            labels: data.map((item) => `${item.nama_bulan} ${item.tahun}`),
+            datasets: [
                 {
-                    name: "Uang Masuk",
-                    data: chartData.map((item) => item.uang_masuk),
-                    color: "#198754",
-                },
-                {
-                    name: "Setor Uang",
-                    data: chartData.map((item) => item.uang_keluar),
-                    color: "#dc3545",
-                },
-            ],
-            credits: {
-                enabled: false,
-            },
-            plotOptions: {
-                column: {
+                    label: "Uang Masuk",
+                    data: data.map((item) => item.uang_masuk),
+                    backgroundColor: "rgba(25, 135, 84, 0.8)",
+                    borderColor: "rgb(25, 135, 84)",
+                    borderWidth: 1,
                     borderRadius: 5,
                 },
-            },
+                {
+                    label: "Setor Uang",
+                    data: data.map((item) => item.uang_keluar),
+                    backgroundColor: "rgba(220, 53, 69, 0.8)",
+                    borderColor: "rgb(220, 53, 69)",
+                    borderWidth: 1,
+                    borderRadius: 5,
+                },
+            ],
         };
     }, [tabungan]);
 
@@ -386,9 +389,10 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
                         {/* Chart */}
                         <div className="card border-0 shadow m-1 mb-4">
                             <div className="card-body">
-                                <HighchartsReact
-                                    highcharts={Highcharts}
+                                <Bar
                                     options={chartOptions}
+                                    data={chartData}
+                                    height={100}
                                 />
                             </div>
                         </div>
@@ -524,9 +528,10 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
                         {/* Chart */}
                         <div className="card border-0 shadow m-1">
                             <div className="card-body">
-                                <HighchartsReact
-                                    highcharts={Highcharts}
+                                <Bar
                                     options={chartTabunganOptions}
+                                    data={chartTabunganData}
+                                    height={100}
                                 />
                             </div>
                         </div>
