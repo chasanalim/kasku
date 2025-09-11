@@ -146,7 +146,7 @@ export default function Sidebar() {
                                                         : ""
                                                 }`}
                                             >
-                                                <span>SHODAQAH</span>
+                                                <span>INFAQ RUTIN</span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}
@@ -165,7 +165,7 @@ export default function Sidebar() {
                                                         : ""
                                                 }`}
                                             >
-                                                <span>INFAQ RUTIN</span>
+                                                <span>SHODAQAH</span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}

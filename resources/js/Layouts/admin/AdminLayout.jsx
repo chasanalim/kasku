@@ -2,14 +2,16 @@ import React from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 // import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Navigation from "./partials/Navigation";
-import { Head, usePage } from "@inertiajs/react";
+import { Head, usePage, router } from "@inertiajs/react";
 import Sidebar from "./partials/Sidebar";
 
 export default function AdminLayout({ children }) {
     const { auth } = usePage().props;
 
+    // Redirect to view-login if not authenticated
     if (!auth?.user) {
-        return <Navigate to="/login" />;
+        router.visit(route("view-login"));
+        return null;
     }
 
     return (
