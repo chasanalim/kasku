@@ -24,9 +24,14 @@ export default function BukuBesar({ title }) {
     const [tahun, setTahun] = useState(today.getFullYear());
     const [loading, setLoading] = useState(false);
 
-    // Data state
+    // Update state
     const [akun, setAkun] = useState([]);
-    const [totalAkun, setTotalAkun] = useState(0);
+    const [total, setTotal] = useState({
+        saldo_bulan_lalu: 0,
+        pemasukan: 0,
+        pengeluaran: 0,
+        saldo_sekarang: 0
+    });
 
     // Ambil data dari backend
     const fetchData = async () => {
@@ -36,10 +41,15 @@ export default function BukuBesar({ title }) {
                 params: { bulan: bulan + 1, tahun },
             });
             setAkun(res.data.akun || []);
-            setTotalAkun(res.data.total_akun|| 0);
+            setTotal(res.data.total || {});
         } catch (e) {
             setAkun([]);
-            setTotalAkun(0);
+            setTotal({
+                saldo_bulan_lalu: 0,
+                pemasukan: 0,
+                pengeluaran: 0,
+                saldo_sekarang: 0
+            });
         }
         setLoading(false);
     };
@@ -105,69 +115,66 @@ export default function BukuBesar({ title }) {
                     </div>
                 </div>
                 <div className="row">
-                    {/* Tabel Kiri: Pemasukan */}
-                    <div className="col-md-8 offset-md-2  mb-4">
+                    <div className="col-12 mb-4">
                         <div className="card">
                             <div className="card-header bg-success text-white">
-                                <b>KAS KEUANGAN KELOMPOK 1</b>
+                                <b>BUKU BESAR KEUANGAN KELOMPOK 1</b>
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">
                                     <table className="table table-bordered table-sm">
-                                        <thead>
-                                            <tr className="text-center">
-                                                <th style={{ width: "2%" }}>
-                                                    No
-                                                </th>
-                                                <th>Akun Rekening</th>
-                                                <th>Jumlah</th>
+                                        <thead className="text-center">
+                                            <tr>
+                                                <th style={{ width: "2%" }}>No</th>
+                                                <th>Nama Kas</th>
+                                                <th>Saldo Bulan Lalu</th>
+                                                <th>Pemasukan</th>
+                                                <th>Pengeluaran</th>
+                                                <th>Saldo Sekarang</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {akun.length === 0 && (
                                                 <tr>
-                                                    <td
-                                                        colSpan={5}
-                                                        className="text-center"
-                                                    >
+                                                    <td colSpan={6} className="text-center">
                                                         Tidak ada data
                                                     </td>
                                                 </tr>
                                             )}
                                             {akun.map((row, i) => (
                                                 <tr key={i}>
-                                                    <td className="text-center">
-                                                        {i + 1}
-                                                    </td>
-                                                    
+                                                    <td className="text-center">{i + 1}</td>
                                                     <td>{row.nama}</td>
-                                                    <td className="text-end text-success">
-                                                        Rp{" "}
-                                                        {Number(
-                                                            row.saldo_awal
-                                                        ).toLocaleString(
-                                                            "id-ID"
-                                                        )}
+                                                    <td className="text-end">
+                                                        Rp {Number(row.saldo_bulan_lalu).toLocaleString("id-ID")}
                                                     </td>
-                                                    
+                                                    <td className="text-end text-success">
+                                                        Rp {Number(row.pemasukan).toLocaleString("id-ID")}
+                                                    </td>
+                                                    <td className="text-end text-danger">
+                                                        Rp {Number(row.pengeluaran).toLocaleString("id-ID")}
+                                                    </td>
+                                                    <td className="text-end">
+                                                        Rp {Number(row.saldo_sekarang).toLocaleString("id-ID")}
+                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                         <tfoot>
-                                            <tr>
-                                                <th
-                                                    colSpan={2}
-                                                    className="text-end"
-                                                >
-                                                    Total
-                                                </th>
-                                                <th className="text-end text-success">
-                                                    Rp{" "}
-                                                    {Number(
-                                                        totalAkun
-                                                    ).toLocaleString("id-ID")}
-                                                </th>
-                                                <th></th>
+                                            <tr className="fw-bold">
+                                                <td colSpan={2} className="text-end">Total</td>
+                                                <td className="text-end">
+                                                    Rp {Number(total.saldo_bulan_lalu).toLocaleString("id-ID")}
+                                                </td>
+                                                <td className="text-end text-success">
+                                                    Rp {Number(total.pemasukan).toLocaleString("id-ID")}
+                                                </td>
+                                                <td className="text-end text-danger">
+                                                    Rp {Number(total.pengeluaran).toLocaleString("id-ID")}
+                                                </td>
+                                                <td className="text-end">
+                                                    Rp {Number(total.saldo_sekarang).toLocaleString("id-ID")}
+                                                </td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -176,6 +183,7 @@ export default function BukuBesar({ title }) {
                         </div>
                     </div>
                 </div>
+
                 {loading && (
                     <div className="text-center">
                         <span className="spinner-border spinner-border-sm"></span>{" "}

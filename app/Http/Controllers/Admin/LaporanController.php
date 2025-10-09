@@ -266,21 +266,82 @@ class LaporanController extends Controller
             $bulan = $request->input('bulan', date('m'));
             $tahun = $request->input('tahun', date('Y'));
 
+            // Format tanggal awal & akhir bulan ini
             $tanggal_awal = date("$tahun-$bulan-01");
             $tanggal_akhir = date("Y-m-t", strtotime($tanggal_awal));
 
-            // Pemasukan
+            // Format tanggal bulan lalu
+            $bulan_lalu = date('m', strtotime('-1 month', strtotime($tanggal_awal)));
+            $tahun_lalu = $bulan == 1 ? $tahun - 1 : $tahun;
+            $tanggal_akhir_bulan_lalu = date("Y-m-t", strtotime("$tahun_lalu-$bulan_lalu-01"));
+
+            // Ambil semua akun kas
             $akun = AkunRekening::where('tipe', 'kas')->get();
 
-            $total_akun = $akun->sum('saldo_awal');
+            $data_akun = [];
+            $total = [
+                'saldo_bulan_lalu' => 0,
+                'pemasukan' => 0,
+                'pengeluaran' => 0,
+                'saldo_sekarang' => 0
+            ];
+
+            foreach ($akun as $kas) {
+                // Hitung total pemasukan & pengeluaran bulan lalu
+                $total_pemasukan_lalu = DB::table('transaksi')
+                    ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
+                    ->where('transaksi.jenis', 'pemasukan')
+                    ->where('transaksi.akun_id', $kas->id)
+                    ->where('transaksi.tanggal', '<=', $tanggal_akhir_bulan_lalu)
+                    ->sum('detail_transaksi.jumlah');
+
+                $total_pengeluaran_lalu = DB::table('transaksi')
+                    ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
+                    ->where('transaksi.jenis', 'pengeluaran')
+                    ->where('transaksi.akun_id', $kas->id)
+                    ->where('transaksi.tanggal', '<=', $tanggal_akhir_bulan_lalu)
+                    ->sum('detail_transaksi.jumlah');
+
+                // Hitung pemasukan & pengeluaran bulan ini
+                $pemasukan = DB::table('transaksi')
+                    ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
+                    ->where('transaksi.jenis', 'pemasukan')
+                    ->where('transaksi.akun_id', $kas->id)
+                    ->whereBetween('transaksi.tanggal', [$tanggal_awal, $tanggal_akhir])
+                    ->sum('detail_transaksi.jumlah');
+
+                $pengeluaran = DB::table('transaksi')
+                    ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
+                    ->where('transaksi.jenis', 'pengeluaran')
+                    ->where('transaksi.akun_id', $kas->id)
+                    ->whereBetween('transaksi.tanggal', [$tanggal_awal, $tanggal_akhir])
+                    ->sum('detail_transaksi.jumlah');
+
+                // Hitung saldo
+                $saldo_bulan_lalu = $total_pemasukan_lalu - $total_pengeluaran_lalu;
+                $saldo_sekarang = $saldo_bulan_lalu + $pemasukan - $pengeluaran;
+
+                $data_akun[] = [
+                    'nama' => $kas->nama,
+                    'saldo_bulan_lalu' => $saldo_bulan_lalu,
+                    'pemasukan' => $pemasukan,
+                    'pengeluaran' => $pengeluaran,
+                    'saldo_sekarang' => $saldo_sekarang
+                ];
+
+                // Update total
+                $total['saldo_bulan_lalu'] += $saldo_bulan_lalu;
+                $total['pemasukan'] += $pemasukan;
+                $total['pengeluaran'] += $pengeluaran;
+                $total['saldo_sekarang'] += $saldo_sekarang;
+            }
 
             return response()->json([
-                'akun' => $akun,
-                'total_akun' => $total_akun,
+                'akun' => $data_akun,
+                'total' => $total
             ]);
         }
 
-        // Untuk render halaman awal
         return Inertia::render('Admin/Laporan/BukuBesar', [
             'title' => 'Laporan Buku Besar',
             'flash' => ['message' => session('message')]
