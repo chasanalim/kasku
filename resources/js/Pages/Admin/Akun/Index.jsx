@@ -16,6 +16,7 @@ export default function Index({ title, can, flash }) {
             processing: true,
             serverSide: true,
             responsive: true,
+            pageLength: 100,
             ajax: {
                 url: route("admin.akun.index"),
                 type: "GET",

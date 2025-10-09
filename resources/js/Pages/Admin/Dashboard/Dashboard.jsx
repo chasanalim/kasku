@@ -1,28 +1,21 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head } from "@inertiajs/react";
+import { Chart, registerables } from 'chart.js';
 import { Bar } from "react-chartjs-2";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-} from "chart.js";
-import { useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 
-// Register ChartJS components
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-);
+// Register ALL Chart.js components
+Chart.register(...registerables);
 
 export default function Dashboard({ kas_kelompok, tabungan }) {
+    const [isDataReady, setIsDataReady] = useState(false);
+
+    useEffect(() => {
+        if (kas_kelompok && tabungan) {
+            setIsDataReady(true);
+        }
+    }, [kas_kelompok, tabungan]);
+
     const formatCurrency = (number) => {
         return new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -111,6 +104,31 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
 
     const chartData = useMemo(() => {
         const data = processChartData();
+
+        // Add fallback for empty data
+        if (!data || data.length === 0) {
+            return {
+                labels: [],
+                datasets: [
+                    {
+                        label: "Pemasukan",
+                        data: [],
+                        backgroundColor: "rgba(25, 135, 84, 0.8)",
+                        borderColor: "rgb(25, 135, 84)",
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    },
+                    {
+                        label: "Pengeluaran",
+                        data: [],
+                        backgroundColor: "rgba(220, 53, 69, 0.8)",
+                        borderColor: "rgb(220, 53, 69)",
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    },
+                ],
+            };
+        }
 
         return {
             labels: data.map((item) => `${item.nama_bulan} ${item.tahun}`),
@@ -236,6 +254,11 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
             ],
         };
     }, [tabungan]);
+
+    useEffect(() => {
+        console.log('Chart Data:', chartData);
+        console.log('Kas Kelompok:', kas_kelompok);
+    }, [chartData, kas_kelompok]);
 
     return (
         <AdminLayout header={<h2 className="fs-4 fw-semibold">Dashboard</h2>}>
@@ -387,15 +410,18 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
                         </div>
 
                         {/* Chart */}
-                        <div className="card border-0 shadow m-1 mb-4">
-                            <div className="card-body">
-                                <Bar
-                                    options={chartOptions}
-                                    data={chartData}
-                                    height={100}
-                                />
+                        {isDataReady && (
+                            <div className="card border-0 shadow m-1 mb-4">
+                                <div className="card-body">
+                                    <Bar
+                                        options={chartOptions}
+                                        data={chartData}
+                                        height={100}
+                                        redraw={true}
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </section>
@@ -526,15 +552,18 @@ export default function Dashboard({ kas_kelompok, tabungan }) {
                         </div>
 
                         {/* Chart */}
-                        <div className="card border-0 shadow m-1">
-                            <div className="card-body">
-                                <Bar
-                                    options={chartTabunganOptions}
-                                    data={chartTabunganData}
-                                    height={100}
-                                />
+                        {isDataReady && (
+                            <div className="card border-0 shadow m-1">
+                                <div className="card-body">
+                                    <Bar
+                                        options={chartTabunganOptions}
+                                        data={chartTabunganData}
+                                        height={100}
+                                        redraw={true}
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </section>

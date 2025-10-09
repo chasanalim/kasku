@@ -510,6 +510,22 @@ export default function Index({ title, flash, shodaqah, can }) {
                                                 {selectedIds.length})
                                             </button>
                                         </div>
+                                        <div className="col-auto">
+                                            <button
+                                                className="btn btn-sm btn-secondary mt-2 me-2"
+                                                onClick={() => router.visit(route('admin.laporan.rekap-shodaqah'))}
+                                            >
+                                                <i className="bi bi-file-earmark-spreadsheet me-1"></i>
+                                                Laporan Kelompok
+                                            </button>
+                                            <button
+                                                className="btn btn-sm btn-secondary mt-2 me-2"
+                                                onClick={() => router.visit(route('admin.laporan.rekap-shodaqah-desa'))}
+                                            >
+                                                <i className="bi bi-file-earmark-spreadsheet me-1"></i>
+                                                Laporan Desa
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="table-responsive">

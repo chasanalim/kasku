@@ -86,6 +86,15 @@ export default function RekapTabunganMasjid({ title, flash }) {
                     searchable: false,
                 },
                 {
+                    data: "sisa_tabungan",
+                    name: "sisa_tabungan",
+                    className: "text-end",
+                    render: function (data) {
+                        return `Rp ${parseInt(data).toLocaleString("id-ID")}`;
+                    },
+                    searchable: false,
+                },
+                {
                     data: "percentage_format",
                     name: "percentage",
                     className: "text-center",
@@ -122,12 +131,23 @@ export default function RekapTabunganMasjid({ title, flash }) {
                         return parseInt(a) + parseInt(b);
                     }, 0);
 
+                // Calculate total tabungan
+                const sisaJatah = api
+                    .column(4, { page: "current" })
+                    .data()
+                    .reduce((a, b) => {
+                        return parseInt(a) + parseInt(b);
+                    }, 0);
+
                 // Update footer
                 $(api.column(2).footer()).html(
                     `Rp ${totalJatah.toLocaleString("id-ID")}`
                 );
                 $(api.column(3).footer()).html(
                     `Rp ${totalTabungan.toLocaleString("id-ID")}`
+                );
+                $(api.column(4).footer()).html(
+                    `Rp ${sisaJatah.toLocaleString("id-ID")}`
                 );
             },
         });
@@ -184,6 +204,7 @@ export default function RekapTabunganMasjid({ title, flash }) {
                                                 <th>NAMA JAMAAH</th>
                                                 <th>TARGET TABUNGAN</th>
                                                 <th>TOTAL TABUNGAN</th>
+                                                <th>SISA JATAH</th>
                                                 <th>PERSENTASE</th>
                                             </tr>
                                         </thead>
