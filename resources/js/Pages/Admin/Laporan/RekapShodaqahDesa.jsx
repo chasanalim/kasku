@@ -221,8 +221,13 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     .data()
                     .reduce((a, b) => parse(a) + parse(b), 0);
 
-                const totalJumlah = api
+                const totalZakat = api
                     .column(7, { page: "current" })
+                    .data()
+                    .reduce((a, b) => parse(a) + parse(b), 0);
+
+                const totalJumlah = api
+                    .column(8, { page: "current" })
                     .data()
                     .reduce((a, b) => parse(a) + parse(b), 0);
 
@@ -247,6 +252,10 @@ export default function RekapShodaqah({ title, flash, shodaqah, can }) {
                     )}`
                 );
                 $(api.column(7).footer()).html(
+                    `Rp ${Math.round(totalZakat).toLocaleString("id-ID")}`
+                );
+                
+                $(api.column(8).footer()).html(
                     `Rp ${Math.round(totalJumlah).toLocaleString("id-ID")}`
                 );
             },

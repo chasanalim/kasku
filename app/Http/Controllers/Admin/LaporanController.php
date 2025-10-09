@@ -22,7 +22,7 @@ class LaporanController extends Controller
 
             $data = DB::table('jamaah')
                 ->leftJoin(DB::raw('(
-                SELECT 
+                SELECT
                     detail_transaksi.jamaah_id,
                     MAX(transaksi.tanggal) as tanggal,
                     SUM(detail_transaksi.persenan) as persenan,
@@ -85,7 +85,7 @@ class LaporanController extends Controller
 
             $data = DB::table('jamaah')
                 ->leftJoin(DB::raw('(
-                    SELECT 
+                    SELECT
                         detail_transaksi.jamaah_id,
                         MAX(transaksi.tanggal) as tanggal,
                         SUM(detail_transaksi.persenan) as persenan,
@@ -94,7 +94,7 @@ class LaporanController extends Controller
                         SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN 2000 ELSE 0 END) as kk,
                         SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN detail_transaksi.shodaqah_daerah - 2000 ELSE 0 END) as ppg,
                         0 as zakat,
-                        SUM(detail_transaksi.jumlah) as jumlah,
+                        SUM(detail_transaksi.jumlah - detail_transaksi.shodaqah_kelompok) as jumlah,
                         COUNT(transaksi.id) as transaksi_count
                     FROM detail_transaksi
                     INNER JOIN transaksi ON detail_transaksi.transaksi_id = transaksi.id
@@ -141,11 +141,10 @@ class LaporanController extends Controller
         if ($request->wantsJson()) {
             $data = DB::table('master_tabungan')
                 ->leftJoin(DB::raw('(
-                    SELECT 
+                    SELECT
                         jamaah_id,
                         SUM(jumlah) as total_tabungan
                     FROM tabungan_masjid
-                    WHERE status = 1
                     GROUP BY jamaah_id
                 ) as tm'), 'master_tabungan.id', '=', 'tm.jamaah_id')
                 ->select(
@@ -153,10 +152,11 @@ class LaporanController extends Controller
                     'master_tabungan.nama',
                     'master_tabungan.jatah',
                     DB::raw('COALESCE(tm.total_tabungan, 0) as total_tabungan'),
-                    DB::raw('CASE 
-                        WHEN master_tabungan.jatah > 0 
+                    DB::raw('master_tabungan.jatah - COALESCE(tm.total_tabungan, 0) as sisa_tabungan'),
+                    DB::raw('CASE
+                        WHEN master_tabungan.jatah > 0
                         THEN ROUND((COALESCE(tm.total_tabungan, 0) / master_tabungan.jatah) * 100, 2)
-                        ELSE 0 
+                        ELSE 0
                     END as percentage')
                 )
                 ->orderBy('master_tabungan.id', 'asc');
@@ -349,7 +349,6 @@ class LaporanController extends Controller
 
         $details = DB::table('tabungan_masjid')
             ->where('jamaah_id', $jamaahId)
-            ->where('status', 1)
             ->orderBy('tanggal', 'desc')
             ->get(['tanggal', 'jumlah']);
 
