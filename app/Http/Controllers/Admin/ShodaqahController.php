@@ -181,53 +181,121 @@ class ShodaqahController extends Controller
                 ]);
             }
 
+            // if ($request->shodaqah_kelompok > 0) {
+            //     $akunDanaAsad = AkunRekening::where('kode_akun', '102')->first();
+            //     $akunListrik = AkunRekening::where('kode_akun', '103')->first();
+            //     $akunDanaSosial = AkunRekening::where('kode_akun', '104')->first();
+            //     $akunPenampung = AkunRekening::where('kode_akun', '603')->first();
+            //     $sisa = $request->shodaqah_kelompok - 8000;
+
+            //     if ($request->shodaqah_kelompok >= 8000) {
+            //         $akunDanaAsad->increment('saldo_awal', 2000);
+            //         $akunListrik->increment('saldo_awal', 3000);
+            //         $akunDanaSosial->increment('saldo_awal', 3000);
+            //         $akunPenampung->increment('saldo_awal', $sisa);
+
+            //         $transaksiDanaAsad = Transaksi::create([
+            //             'tanggal' => $request->tanggal,
+            //             'akun_id' => $akunDanaAsad->id,
+            //             'keterangan' => 'Dana Asad dari ' . Jamaah::find($request->jamaah_id)->nama,
+            //             'jenis' => 'pemasukan'
+            //         ]);
+            //         DetailTransaksi::create([
+            //             'transaksi_id' => $transaksiDanaAsad->id,
+            //             'jamaah_id' => $request->jamaah_id,
+            //             'persenan' => 0,
+            //             'jimpitan' => 0,
+            //             'dapur_pusat' => 0,
+            //             'shodaqah_daerah' => 0,
+            //             'shodaqah_kelompok' => 2000,
+            //             'jumlah' => 2000,
+            //         ]);
+
+            //         $transaksiListrik = Transaksi::create([
+            //             'tanggal' => $request->tanggal,
+            //             'akun_id' => $akunListrik->id,
+            //             'keterangan' => 'Dana Listrik dari ' . Jamaah::find($request->jamaah_id)->nama,
+            //             'jenis' => 'pemasukan'
+            //         ]);
+
+            //         DetailTransaksi::create([
+            //             'transaksi_id' => $transaksiListrik->id,
+            //             'jamaah_id' => $request->jamaah_id,
+            //             'persenan' => 0,
+            //             'jimpitan' => 0,
+            //             'dapur_pusat' => 0,
+            //             'shodaqah_daerah' => 0,
+            //             'shodaqah_kelompok' => 3000,
+            //             'jumlah' => 3000,
+            //         ]);
+
+            //         $transaksiDanaSosial = Transaksi::create([
+            //             'tanggal' => $request->tanggal,
+            //             'akun_id' => $akunDanaSosial->id,
+            //             'keterangan' => 'Dana Sosial dari ' . Jamaah::find($request->jamaah_id)->nama,
+            //             'jenis' => 'pemasukan'
+            //         ]);
+
+            //         DetailTransaksi::create([
+            //             'transaksi_id' => $transaksiDanaSosial->id,
+            //             'jamaah_id' => $request->jamaah_id,
+            //             'persenan' => 0,
+            //             'jimpitan' => 0,
+            //             'dapur_pusat' => 0,
+            //             'shodaqah_daerah' => 0,
+            //             'shodaqah_kelompok' => 3000,
+            //             'jumlah' => 3000,
+            //         ]);
+
+            //         if ($sisa > 0) {
+            //             $transaksiSisa = Transaksi::create([
+            //                 'tanggal' => $request->tanggal,
+            //                 'akun_id' => $akunPenampung->id,
+            //                 'keterangan' => 'Sisa Shodaqoh Kelompok dari ' . Jamaah::find($request->jamaah_id)->nama,
+            //                 'jenis' => 'pemasukan'
+            //             ]);
+
+
+            //             DetailTransaksi::create([
+            //                 'transaksi_id' => $transaksiSisa->id,
+            //                 'jamaah_id' => $request->jamaah_id,
+            //                 'persenan' => 0,
+            //                 'jimpitan' => 0,
+            //                 'dapur_pusat' => 0,
+            //                 'shodaqah_daerah' => 0,
+            //                 'shodaqah_kelompok' => $sisa,
+            //                 'jumlah' => $sisa,
+            //             ]);
+            //         }
+            //     } else {
+            //         $transaksiListrik = Transaksi::create([
+            //             'tanggal' => $request->tanggal,
+            //             'akun_id' => $akunListrik->id,
+            //             'keterangan' => 'Dana Listrik dari ' . Jamaah::find($request->jamaah_id)->nama,
+            //             'jenis' => 'pemasukan'
+            //         ]);
+
+            //         DetailTransaksi::create([
+            //             'transaksi_id' => $transaksiListrik->id,
+            //             'jamaah_id' => $request->jamaah_id,
+            //             'persenan' => 0,
+            //             'jimpitan' => 0,
+            //             'dapur_pusat' => 0,
+            //             'shodaqah_daerah' => 0,
+            //             'shodaqah_kelompok' => $request->shodaqah_kelompok,
+            //             'jumlah' => $request->shodaqah_kelompok,
+            //         ]);
+            //     }
+            // }
             if ($request->shodaqah_kelompok > 0) {
-                $akunDanaAsad = AkunRekening::where('kode_akun', '102')->first();
-                $akunListrik = AkunRekening::where('kode_akun', '103')->first();
+                $akunKasKelompok = AkunRekening::where('kode_akun', '101')->first();
                 $akunDanaSosial = AkunRekening::where('kode_akun', '104')->first();
-                $akunPenampung = AkunRekening::where('kode_akun', '603')->first();
-                $sisa = $request->shodaqah_kelompok - 8000;
+                $sisa = $request->shodaqah_kelompok - 3000;
 
                 if ($request->shodaqah_kelompok >= 8000) {
-                    $akunDanaAsad->increment('saldo_awal', 2000);
-                    $akunListrik->increment('saldo_awal', 3000);
+
                     $akunDanaSosial->increment('saldo_awal', 3000);
-                    $akunPenampung->increment('saldo_awal', $sisa);
-
-                    $transaksiDanaAsad = Transaksi::create([
-                        'tanggal' => $request->tanggal,
-                        'akun_id' => $akunDanaAsad->id,
-                        'keterangan' => 'Dana Asad dari ' . Jamaah::find($request->jamaah_id)->nama,
-                        'jenis' => 'pemasukan'
-                    ]);
-                    DetailTransaksi::create([
-                        'transaksi_id' => $transaksiDanaAsad->id,
-                        'jamaah_id' => $request->jamaah_id,
-                        'persenan' => 0,
-                        'jimpitan' => 0,
-                        'dapur_pusat' => 0,
-                        'shodaqah_daerah' => 0,
-                        'shodaqah_kelompok' => 2000,
-                        'jumlah' => 2000,
-                    ]);
-
-                    $transaksiListrik = Transaksi::create([
-                        'tanggal' => $request->tanggal,
-                        'akun_id' => $akunListrik->id,
-                        'keterangan' => 'Dana Listrik dari ' . Jamaah::find($request->jamaah_id)->nama,
-                        'jenis' => 'pemasukan'
-                    ]);
-
-                    DetailTransaksi::create([
-                        'transaksi_id' => $transaksiListrik->id,
-                        'jamaah_id' => $request->jamaah_id,
-                        'persenan' => 0,
-                        'jimpitan' => 0,
-                        'dapur_pusat' => 0,
-                        'shodaqah_daerah' => 0,
-                        'shodaqah_kelompok' => 3000,
-                        'jumlah' => 3000,
-                    ]);
+                    $akunKasKelompok->increment('saldo_awal', $sisa);
 
                     $transaksiDanaSosial = Transaksi::create([
                         'tanggal' => $request->tanggal,
@@ -250,8 +318,8 @@ class ShodaqahController extends Controller
                     if ($sisa > 0) {
                         $transaksiSisa = Transaksi::create([
                             'tanggal' => $request->tanggal,
-                            'akun_id' => $akunPenampung->id,
-                            'keterangan' => 'Sisa Shodaqoh Kelompok dari ' . Jamaah::find($request->jamaah_id)->nama,
+                            'akun_id' => $akunKasKelompok->id,
+                            'keterangan' => 'Kas Kelompok',
                             'jenis' => 'pemasukan'
                         ]);
 
@@ -268,15 +336,15 @@ class ShodaqahController extends Controller
                         ]);
                     }
                 } else {
-                    $transaksiListrik = Transaksi::create([
+                    $transaksiSIsa = Transaksi::create([
                         'tanggal' => $request->tanggal,
-                        'akun_id' => $akunListrik->id,
-                        'keterangan' => 'Dana Listrik dari ' . Jamaah::find($request->jamaah_id)->nama,
+                        'akun_id' => $akunKasKelompok->id,
+                        'keterangan' => 'Kas Kelompok',
                         'jenis' => 'pemasukan'
                     ]);
 
                     DetailTransaksi::create([
-                        'transaksi_id' => $transaksiListrik->id,
+                        'transaksi_id' => $transaksiSIsa->id,
                         'jamaah_id' => $request->jamaah_id,
                         'persenan' => 0,
                         'jimpitan' => 0,

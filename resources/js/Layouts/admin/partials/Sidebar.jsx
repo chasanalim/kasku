@@ -165,7 +165,7 @@ export default function Sidebar() {
                                                         : ""
                                                 }`}
                                             >
-                                                <span>SHODAQAH</span>
+                                                <span>SHODAQAH KAS KELOMPOK</span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}
@@ -243,7 +243,7 @@ export default function Sidebar() {
                                                 }`}
                                             >
                                                 <span>
-                                                    PENGELUARAN KELOMPOK
+                                                    PENGELUARAN KAS KELOMPOK
                                                 </span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item

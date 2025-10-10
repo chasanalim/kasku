@@ -228,6 +228,30 @@ class LaporanController extends Controller
                     'detail_transaksi.jumlah as nominal'
                 ]);
 
+            // Ambil data Kas Kelompok
+            $kas_kelompok = DB::table('transaksi')
+                ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
+                ->where('transaksi.jenis', 'pemasukan')
+                ->where('transaksi.keterangan', 'Kas Kelompok')
+                ->whereBetween('transaksi.tanggal', [$tanggal_awal, $tanggal_akhir])
+                ->select(
+                    DB::raw('MAX(transaksi.tanggal) as tanggal'),
+                    DB::raw('SUM(detail_transaksi.jumlah) as total_nominal')
+                )
+                ->first();
+
+            // Tambahkan data Kas Kelompok ke pemasukan jika ada
+            if ($kas_kelompok && $kas_kelompok->total_nominal > 0) {
+                $pemasukan = $pemasukan->push((object)[
+                    'tanggal' => $kas_kelompok->tanggal,
+                    'keterangan' => 'Kas Kelompok dari Amplop IR',
+                    'nominal' => $kas_kelompok->total_nominal
+                ]);
+            }
+
+            // Sort pemasukan by date after adding new entry
+            $pemasukan = $pemasukan->sortBy('tanggal')->values();
+
             // Pengeluaran bulan ini
             $pengeluaran = DB::table('transaksi')
                 ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
@@ -240,7 +264,7 @@ class LaporanController extends Controller
                     'detail_transaksi.jumlah as nominal'
                 ]);
 
-            // Total pemasukan & pengeluaran bulan ini
+            // Update total pemasukan to include kas kelompok
             $total_pemasukan = $pemasukan->sum('nominal');
             $total_pengeluaran = $pengeluaran->sum('nominal');
 
