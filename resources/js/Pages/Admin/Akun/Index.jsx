@@ -97,7 +97,7 @@ export default function Index({ title, can, flash }) {
                     orderable: true,
                     searchable: true,
                     render: function (data) {
-                        return `Rp. ` + data;
+                        return `Rp ${parseInt(data).toLocaleString("id-ID")}`;
                     },
                 },
             ],

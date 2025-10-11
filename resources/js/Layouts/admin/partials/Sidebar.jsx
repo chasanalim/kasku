@@ -33,6 +33,7 @@ export default function Sidebar() {
     const isAnySubmenuLaporanActive = () => {
         return (
             route().current("admin.laporan") ||
+            route().current("admin.laporan-desa") ||
             route().current("admin.jurnal") ||
             route().current("admin.buku-besar") ||
             route().current("admin.laporan.rekap-shodaqah") ||
@@ -334,7 +335,7 @@ export default function Sidebar() {
                                                         : ""
                                                 }`}
                                             >
-                                                <span>BUKU BESAR</span>
+                                                <span>BUKU BESAR KAS</span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}
@@ -392,6 +393,25 @@ export default function Sidebar() {
                                                 }`}
                                             >
                                                 <span>REKAP SHODAQAH DESA</span>
+                                            </NavDropdown.Item>
+                                            <NavDropdown.Item
+                                                as={Link}
+                                                method="get"
+                                                href={route(
+                                                    "admin.laporan-desa"
+                                                )}
+                                                active={route().current(
+                                                    "admin.laporan-desa"
+                                                )}
+                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                    route().current(
+                                                        "admin.laporan-desa"
+                                                    )
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <span>LAPORAN SETORAN DESA</span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}

@@ -76,8 +76,10 @@ export default function Navbar(props) {
                 return "Rekap Shodaqah";
             case currentRoute.startsWith("admin.laporan.rekap-tabungan"):
                 return "Rekap Tabungan Masjid";
+            case currentRoute.startsWith("admin.laporan-desa"):
+                return "Laporan Setor Desa";
             case currentRoute.startsWith("admin.laporan"):
-                return "Laporan";
+                return "Laporan Keuangan Kelompok";
             case currentRoute.startsWith("admin.buku-besar"):
                 return "Buku Besar";
             case currentRoute.startsWith("admin.jurnal"):
