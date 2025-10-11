@@ -21,8 +21,8 @@ class KasKelompokController extends Controller
     {
         $infaq = DetailTransaksi::with(['transaksi', 'transaksi.akun'])
             ->whereHas('transaksi', function ($query) {
-                $query->where('jenis', 'pengeluaran_kas')
-                    ->where('akun_id', 1);
+                $query->where('jenis', 'pengeluaran_kas');
+                // ->where('akun_id', 1);
             })
             ->orderBy('id', 'desc')
             ->get();
@@ -31,8 +31,8 @@ class KasKelompokController extends Controller
         if ($request->wantsJson()) {
             $data = DetailTransaksi::with(['transaksi', 'transaksi.akun'])
                 ->whereHas('transaksi', function ($query) {
-                    $query->where('jenis', 'pengeluaran_kas')
-                        ->where('akun_id', 1);
+                    $query->where('jenis', 'pengeluaran_kas');
+                    // ->where('akun_id', 1);
                 })
                 ->orderBy('id', 'desc')
                 ->whereHas('transaksi', function ($query) use ($request) {
@@ -107,7 +107,6 @@ class KasKelompokController extends Controller
                     'jumlah' => $request->jumlah,
                 ]);
             }
-
         });
 
         return redirect()->route('admin.kaskelompok.index')
@@ -190,12 +189,19 @@ class KasKelompokController extends Controller
      */
     public function destroy(string $id)
     {
-        $shodaqah = DetailTransaksi::findOrFail($id);
-        $shodaqah->delete();
-        $transaksi = Transaksi::find($shodaqah->transaksi_id);
-        $transaksi->delete();
+        DB::transaction(function () use ($id) {
+            $shodaqah = DetailTransaksi::findOrFail($id);
+            $transaksi = Transaksi::find($shodaqah->transaksi_id);
+            $akun = AkunRekening::find($transaksi->akun_id);
 
-        return redirect()->route('admin.kaskelompok.index')->with('message', 'Data Pengeluaran berhasil dihapus');
+            $akun->increment('saldo_awal', $shodaqah->jumlah);
+
+            // Delete the records
+            $shodaqah->delete();
+            $transaksi->delete();
+
+            return redirect()->route('admin.kaskelompok.index')->with('message', 'Data Pengeluaran berhasil dihapus');
+        });
     }
 
     public function verify(string $id)

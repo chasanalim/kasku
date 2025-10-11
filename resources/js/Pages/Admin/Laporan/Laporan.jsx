@@ -119,7 +119,7 @@ export default function Laporan({ title }) {
                         <div className="card">
                             <div className="card-header bg-success text-white">
                                 <b>
-                                    Saldo Akhir Bulan Lalu & Pemasukan Bulan Ini
+                                    Pemasukan Bulan {bulanList[bulan]} {tahun}
                                 </b>
                             </div>
                             <div className="card-body">
@@ -140,7 +140,7 @@ export default function Laporan({ title }) {
                                                 </td>
                                                 <td>
                                                     <b>
-                                                        Saldo Akhir Bulan Lalu
+                                                        Saldo Bulan {bulanList[bulan - 1]}
                                                     </b>
                                                 </td>
                                                 <td
@@ -190,7 +190,7 @@ export default function Laporan({ title }) {
                                                     colSpan={2}
                                                     className="text-end"
                                                 >
-                                                    Total Pemasukan
+                                                    Jumlah
                                                 </th>
                                                 <th className="text-end text-success">
                                                     Rp{" "}
@@ -209,7 +209,7 @@ export default function Laporan({ title }) {
                     <div className="col-md-6 mb-4">
                         <div className="card">
                             <div className="card-header bg-danger text-white">
-                                <b>Pengeluaran Bulan Ini</b>
+                                <b>Pengeluaran Bulan {bulanList[bulan]} {tahun}</b>
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">
@@ -255,7 +255,7 @@ export default function Laporan({ title }) {
                                                     colSpan={2}
                                                     className="text-end"
                                                 >
-                                                    Total Pengeluaran
+                                                    Jumlah
                                                 </th>
                                                 <th className="text-end text-danger">
                                                     Rp{" "}

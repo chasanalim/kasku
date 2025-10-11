@@ -7,11 +7,12 @@ use App\Models\Jamaah;
 use App\Models\Transaksi;
 use App\Models\AkunRekening;
 use Illuminate\Http\Request;
+use App\Models\MasterTabungan;
 use App\Models\TabunganMasjid;
+use App\Models\DetailTransaksi;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\MasterTabungan;
 
 class TabunganMasjidController extends Controller
 {
@@ -145,9 +146,7 @@ class TabunganMasjidController extends Controller
             'jumlah' => 'required|numeric'
         ]);
 
-        DB::transaction(function () use ($request, $id) {
-
-        });
+        DB::transaction(function () use ($request, $id) {});
 
         return redirect()->route('admin.tabungan.index')
             ->with('message', 'Data TabunganMasjid Jamaah berhasil diupdate');
@@ -158,13 +157,17 @@ class TabunganMasjidController extends Controller
      */
     public function destroy(string $id)
     {
-        $tabungan = TabunganMasjid::findOrFail($id);
-        $tabungan->delete();
+        DB::transaction(function () use ($id) {
+            $shodaqah = TabunganMasjid::findOrFail($id);
+            $akun = AkunRekening::find($shodaqah->akun_id);
 
-        $transaksi = Transaksi::find($tabungan->transaksi_id);
-        $transaksi->delete();
+            $akun->decrement('saldo_awal', $shodaqah->jumlah);
 
-        return redirect()->route('admin.tabungan.index')->with('message', 'Data TabunganMasjid Jamaah berhasil dihapus');
+            // Delete the records
+            $shodaqah->delete();
+
+            return redirect()->route('admin.tabungan.index')->with('message', 'Data TabunganMasjid Jamaah berhasil dihapus');
+        });
     }
 
     public function verify(string $id)

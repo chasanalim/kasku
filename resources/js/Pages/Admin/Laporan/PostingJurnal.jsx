@@ -93,7 +93,7 @@ export default function PostingJurnal({ title }) {
                             ))}
                         </select>
                     </div>
-                    <div className="col-auto ms-auto">
+                    {/* <div className="col-auto ms-auto">
                         <button
                             className="btn btn-danger"
                             onClick={() =>
@@ -108,7 +108,7 @@ export default function PostingJurnal({ title }) {
                         >
                             <i className="bi bi-file-pdf me-1"></i> Export PDF
                         </button>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="row">
                     {/* Tabel Kiri: Pemasukan */}

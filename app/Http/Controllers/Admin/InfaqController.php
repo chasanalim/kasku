@@ -21,8 +21,8 @@ class InfaqController extends Controller
     {
         $infaq = DetailTransaksi::with(['transaksi', 'transaksi.akun'])
             ->whereHas('transaksi', function ($query) {
-                $query->where('jenis', 'pemasukan_kas')
-                    ->where('akun_id', 1);
+                $query->where('jenis', 'pemasukan_kas');
+                // ->where('akun_id', 1);
             })
             ->orderBy('id', 'desc')
             ->get();
@@ -31,8 +31,8 @@ class InfaqController extends Controller
         if ($request->wantsJson()) {
             $data = DetailTransaksi::with(['transaksi', 'transaksi.akun'])
                 ->whereHas('transaksi', function ($query) {
-                    $query->where('jenis', 'pemasukan_kas')
-                        ->where('akun_id', 1);
+                    $query->where('jenis', 'pemasukan_kas');
+                    // ->where('akun_id', 1);
                 })
                 ->orderBy('id', 'desc')
                 ->whereHas('transaksi', function ($query) use ($request) {
@@ -107,7 +107,6 @@ class InfaqController extends Controller
                     'jumlah' => $request->jumlah,
                 ]);
             }
-
         });
 
         return redirect()->route('admin.infaq.index')
@@ -190,13 +189,19 @@ class InfaqController extends Controller
      */
     public function destroy(string $id)
     {
-        $shodaqah = DetailTransaksi::findOrFail($id);
-        $shodaqah->delete();
+        DB::transaction(function () use ($id) {
+            $shodaqah = DetailTransaksi::findOrFail($id);
+            $transaksi = Transaksi::find($shodaqah->transaksi_id);
+            $akun = AkunRekening::find($transaksi->akun_id);
 
-        $transaksi = Transaksi::find($shodaqah->transaksi_id);
-        $transaksi->delete();
+            $akun->decrement('saldo_awal', $shodaqah->jumlah);
 
-        return redirect()->route('admin.infaq.index')->with('message', 'Data Infaq berhasil dihapus');
+            // Delete the records
+            $shodaqah->delete();
+            $transaksi->delete();
+
+            return redirect()->route('admin.infaq.index')->with('message', 'Data Infaq berhasil dihapus');
+        });
     }
 
     public function verify(string $id)

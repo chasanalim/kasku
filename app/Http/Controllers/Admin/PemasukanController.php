@@ -183,7 +183,7 @@ class PemasukanController extends Controller
             );
         });
 
-        return redirect()->route('admin.shodaqah.index')
+        return redirect()->route('admin.pemasukan.index')
             ->with('message', 'Data Shodaqah Jamaah berhasil diupdate');
     }
 
@@ -192,10 +192,21 @@ class PemasukanController extends Controller
      */
     public function destroy(string $id)
     {
-        $shodaqah = DetailTransaksi::findOrFail($id);
-        $shodaqah->delete();
-        $transaksi = Transaksi::find($shodaqah->transaksi_id);
-        $transaksi->delete();
+
+        DB::transaction(function () use ($id) {
+            $shodaqah = DetailTransaksi::findOrFail($id);
+            $transaksi = Transaksi::find($shodaqah->transaksi_id);
+            $akun = AkunRekening::find($transaksi->akun_id);
+
+            $akun->decrement('saldo_awal', $shodaqah->jumlah);
+
+            // Delete the records
+            $shodaqah->delete();
+            $transaksi->delete();
+
+            return redirect()->route('admin.pemasukan.index')
+                ->with('message', 'Data Pemasukan berhasil dihapus');
+        });
 
         return redirect()->route('admin.pemasukan.index')->with('message', 'Data Pemasukan berhasil dihapus');
     }

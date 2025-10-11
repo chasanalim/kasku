@@ -196,12 +196,20 @@ class PengeluaranController extends Controller
      */
     public function destroy(string $id)
     {
-        $shodaqah = DetailTransaksi::findOrFail($id);
-        $shodaqah->delete();
-        $transaksi = Transaksi::find($shodaqah->transaksi_id);
-        $transaksi->delete();
+        DB::transaction(function () use ($id) {
+            $shodaqah = DetailTransaksi::findOrFail($id);
+            $transaksi = Transaksi::find($shodaqah->transaksi_id);
+            $akun = AkunRekening::find($transaksi->akun_id);
 
-        return redirect()->route('admin.pengeluaran.index')->with('message', 'Data Pengeluaran berhasil dihapus');
+            $akun->increment('saldo_awal', $shodaqah->jumlah);
+
+            // Delete the records
+            $shodaqah->delete();
+            $transaksi->delete();
+
+            return redirect()->route('admin.pengeluaran.index')->with('message', 'Data Pengeluaran berhasil dihapus');
+        });
+
     }
 
     public function verify(string $id)

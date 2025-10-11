@@ -159,9 +159,9 @@ class ShodaqahController extends Controller
                 ]);
             }
             if ($request->shodaqah_daerah > 0) {
-                $sisaShodaqah = $request->shodaqah_daerah - 2000;
+                // $sisaShodaqah = $request->shodaqah_daerah - 2000;
                 $akunShodaqahDaerah = AkunRekening::where('kode_akun', '602')->first();
-                $akunShodaqahDaerah->increment('saldo_awal', $sisaShodaqah);
+                $akunShodaqahDaerah->increment('saldo_awal', $request->shodaqah_daerah);
 
                 $transaksiShodaqahDaerah = Transaksi::create([
                     'tanggal' => $request->tanggal,
@@ -453,12 +453,7 @@ class ShodaqahController extends Controller
             $transaksi = Transaksi::find($shodaqah->transaksi_id);
             $akun = AkunRekening::find($transaksi->akun_id);
 
-            if ($akun->id == 28) {
-                $sisa = $shodaqah->jumlah - 2000;
-                $akun->decrement('saldo_awal', $sisa);
-            } else {
-                $akun->decrement('saldo_awal', $shodaqah->jumlah);
-            }
+            $akun->decrement('saldo_awal', $shodaqah->jumlah);
 
             // Delete the records
             $shodaqah->delete();
