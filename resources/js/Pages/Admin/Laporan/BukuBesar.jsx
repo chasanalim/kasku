@@ -102,7 +102,7 @@ export default function BukuBesar({ title }) {
                             className="btn btn-danger"
                             onClick={() =>
                                 window.open(
-                                    route("admin.laporan.export.pdf", {
+                                    route("admin.laporanbuku.export.pdf", {
                                         bulan: bulan + 1,
                                         tahun,
                                     }),
@@ -118,7 +118,7 @@ export default function BukuBesar({ title }) {
                     <div className="col-12 mb-4">
                         <div className="card">
                             <div className="card-header bg-success text-white">
-                                <b>BUKU BESAR KEUANGAN KELOMPOK 1</b>
+                                <b>BUKU BESAR KAS KELOMPOK 1</b>
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">
@@ -127,10 +127,10 @@ export default function BukuBesar({ title }) {
                                             <tr>
                                                 <th style={{ width: "2%" }}>No</th>
                                                 <th>Nama Kas</th>
-                                                <th>Saldo Bulan Lalu</th>
+                                                <th>Saldo {bulanList[bulan - 1]}</th>
                                                 <th>Pemasukan</th>
                                                 <th>Pengeluaran</th>
-                                                <th>Saldo Sekarang</th>
+                                                <th>Saldo {bulanList[bulan]}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -178,6 +178,25 @@ export default function BukuBesar({ title }) {
                                             </tr>
                                         </tfoot>
                                     </table>
+
+                                    <div className="fw-bold text-center my-4 fs-3">
+                                        Pencapaian Bulan {bulanList[bulan]} {tahun}:{" "}
+                                        {total.saldo_sekarang - total.saldo_bulan_lalu >= 0 ? (
+                                            <span className="text-success">
+                                                <i className="bi bi-arrow-up-short"></i>{" "}
+                                                {Number(total.saldo_sekarang - total.saldo_bulan_lalu).toLocaleString(
+                                                    "id-ID"
+                                                )}
+                                            </span>
+                                        ) : (
+                                            <span className="text-danger">
+                                                <i className="bi bi-arrow-down-short"></i>{" "}
+                                                {Number(total.saldo_bulan_lalu - total.saldo_sekarang).toLocaleString(
+                                                    "id-ID"
+                                                )}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
