@@ -244,7 +244,7 @@ class LaporanController extends Controller
             if ($kas_kelompok && $kas_kelompok->total_nominal > 0) {
                 $pemasukan = $pemasukan->push((object)[
                     'tanggal' => $kas_kelompok->tanggal,
-                    'keterangan' => 'Kas Kelompok dari Amplop IR',
+                    'keterangan' => 'Sisa Shodaqoh Kelompok dari Amplop IR',
                     'nominal' => $kas_kelompok->total_nominal
                 ]);
             }
@@ -272,14 +272,51 @@ class LaporanController extends Controller
                 'saldo_akhir_bulan_lalu' => $saldo_akhir_bulan_lalu,
                 'pemasukan' => $pemasukan,
                 'pengeluaran' => $pengeluaran,
-                'total_pemasukan' => $total_pemasukan,
+                'total_pemasukan' => $total_pemasukan + $saldo_akhir_bulan_lalu,
                 'total_pengeluaran' => $total_pengeluaran,
             ]);
         }
 
         // Untuk render halaman awal
         return Inertia::render('Admin/Laporan/Laporan', [
-            'title' => 'Laporan Kas',
+            'title' => 'Laporan Kas Kelompok',
+            'flash' => ['message' => session('message')]
+        ]);
+    }
+
+    public function laporanDesa(Request $request)
+    {
+        if ($request->wantsJson()) {
+            $bulan = $request->input('bulan', date('m'));
+            $tahun = $request->input('tahun', date('Y'));
+
+            // Format tanggal awal & akhir bulan
+            $tanggal_awal = date("$tahun-$bulan-01");
+            $tanggal_akhir = date("Y-m-t", strtotime($tanggal_awal));
+
+            // Get pemasukan (jatah)
+            $jatah = DB::table('jatah_desa')
+                ->select(
+                    'id',
+                    'tanggal',
+                    'keterangan',
+                    'jumlah',
+                )
+                ->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
+                ->orderBy('tanggal')
+                ->get();
+
+            // Calculate total
+            $total_jatah = $jatah->sum('jumlah');
+
+            return response()->json([
+                'jatah' => $jatah,
+                'total_jatah' => $total_jatah
+            ]);
+        }
+
+        return Inertia::render('Admin/Laporan/LaporanDesa', [
+            'title' => 'Laporan Setoran Desa',
             'flash' => ['message' => session('message')]
         ]);
     }
@@ -314,14 +351,20 @@ class LaporanController extends Controller
                 // Hitung total pemasukan & pengeluaran bulan lalu
                 $total_pemasukan_lalu = DB::table('transaksi')
                     ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
-                    ->where('transaksi.jenis', 'pemasukan')
+                    ->where(function ($query) {
+                        $query->where('transaksi.jenis', 'pemasukan')
+                            ->orWhere('transaksi.jenis', 'pemasukan_kas');
+                    })
                     ->where('transaksi.akun_id', $kas->id)
                     ->where('transaksi.tanggal', '<=', $tanggal_akhir_bulan_lalu)
                     ->sum('detail_transaksi.jumlah');
 
                 $total_pengeluaran_lalu = DB::table('transaksi')
                     ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
-                    ->where('transaksi.jenis', 'pengeluaran')
+                    ->where(function ($query) {
+                        $query->where('transaksi.jenis', 'pengeluaran')
+                            ->orWhere('transaksi.jenis', 'pengeluaran_kas');
+                    })
                     ->where('transaksi.akun_id', $kas->id)
                     ->where('transaksi.tanggal', '<=', $tanggal_akhir_bulan_lalu)
                     ->sum('detail_transaksi.jumlah');
@@ -329,14 +372,20 @@ class LaporanController extends Controller
                 // Hitung pemasukan & pengeluaran bulan ini
                 $pemasukan = DB::table('transaksi')
                     ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
-                    ->where('transaksi.jenis', 'pemasukan')
+                    ->where(function ($query) {
+                        $query->where('transaksi.jenis', 'pemasukan')
+                            ->orWhere('transaksi.jenis', 'pemasukan_kas');
+                    })
                     ->where('transaksi.akun_id', $kas->id)
                     ->whereBetween('transaksi.tanggal', [$tanggal_awal, $tanggal_akhir])
                     ->sum('detail_transaksi.jumlah');
 
                 $pengeluaran = DB::table('transaksi')
                     ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
-                    ->where('transaksi.jenis', 'pengeluaran')
+                    ->where(function ($query) {
+                        $query->where('transaksi.jenis', 'pengeluaran')
+                            ->orWhere('transaksi.jenis', 'pengeluaran_kas');
+                    })
                     ->where('transaksi.akun_id', $kas->id)
                     ->whereBetween('transaksi.tanggal', [$tanggal_awal, $tanggal_akhir])
                     ->sum('detail_transaksi.jumlah');
@@ -362,7 +411,8 @@ class LaporanController extends Controller
 
             return response()->json([
                 'akun' => $data_akun,
-                'total' => $total
+                'total' => $total,
+                'selisih' => $total['saldo_sekarang'] - $total['saldo_bulan_lalu']
             ]);
         }
 

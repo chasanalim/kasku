@@ -1,6 +1,7 @@
 <?php
 
 use Inertia\Inertia;
+use App\Models\JatahDesa;
 use App\Models\MasterTabungan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Admin\JamaahController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\ShodaqahController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\JatahDesaController;
 use App\Http\Controllers\Admin\PemasukanController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\UserAdminController;
@@ -52,11 +54,14 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('rekap-shodaqah', [LaporanController::class, 'rekapShodaqah'])->name('laporan.rekap-shodaqah');
     Route::get('rekap-shodaqah-desa', [LaporanController::class, 'rekapShodaqahDesa'])->name('laporan.rekap-shodaqah-desa');
     Route::get('laporan', [LaporanController::class, 'laporan'])->name('laporan');
+    Route::get('laporan-desa', [LaporanController::class, 'laporanDesa'])->name('laporan-desa');
     Route::get('buku-besar', [LaporanController::class, 'bukuBesar'])->name('buku-besar');
     Route::get('jurnal', [LaporanController::class, 'jurnal'])->name('jurnal');
     Route::get('rekap-tabungan-masjid', [LaporanController::class, 'rekapTabungan'])->name('laporan.rekap-tabungan');
     Route::get('laporan/tabungan-detail', [LaporanController::class, 'getTabunganDetail'])
-        ->name('laporan.tabungan-detail');
+    ->name('laporan.tabungan-detail');
+    
+    Route::post('sync', [JatahDesaController::class, 'sync'])->name('sync');
 
     Route::resource('pengeluaran', PengeluaranController::class);
     Route::post('pengeluaran/verify/{id}', [PengeluaranController::class, 'verify'])->name('pengeluaran.verify');
@@ -79,6 +84,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('shodaqah-desa/export/excel', [ExportController::class, 'exportExcelDesa'])->name('shodaqah-desa.export.excel');
 
     Route::get('laporan/export/pdf', [ExportController::class, 'exportPDFlaporan'])->name('laporan.export.pdf');
+    Route::get('laporanbuku/export/pdf', [ExportController::class, 'exportPDFlaporanBuku'])->name('laporanbuku.export.pdf');
 
     Route::resource('tabungan', TabunganMasjidController::class);
     Route::post('tabungan/verify/{id}', [TabunganMasjidController::class, 'verify'])->name('tabungan.verify');
