@@ -247,13 +247,13 @@ export default function Index({ title, flash, infaq, can }) {
 
                 // Hitung total dengan menggunakan page.info()
                 const totalJumlah = api
-                    .column(4, { page: "current" })
+                    .column(5, { page: "current" })
                     .data()
                     .reduce((a, b) => parse(a) + parse(b), 0);
 
                 // Tampilkan hasil dengan format yang benar
 
-                $(api.column(4).footer()).html(
+                $(api.column(5).footer()).html(
                     `Rp ${Math.round(totalJumlah).toLocaleString("id-ID")}`
                 );
             },
@@ -445,7 +445,7 @@ export default function Index({ title, flash, infaq, can }) {
                                         <tfoot>
                                             <tr className="text-center">
                                                 <th
-                                                    colSpan="4"
+                                                    colSpan="5"
                                                     style={{
                                                         textAlign: "right",
                                                         paddingRight: "40px",

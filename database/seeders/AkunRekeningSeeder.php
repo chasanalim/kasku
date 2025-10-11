@@ -47,6 +47,7 @@ class AkunRekeningSeeder extends Seeder
             ['nama' => 'DAPUR PUSAT', 'kode_akun' => '602', 'tipe' => 'Penampung', 'saldo_awal' => 0],
             ['nama' => 'SHODAQAOH DAERAH', 'kode_akun' => '603', 'tipe' => 'Penampung', 'saldo_awal' => 0],
             ['nama' => 'TABUNGAN MASJID DAERAH', 'kode_akun' => '604', 'tipe' => 'Penampung', 'saldo_awal' => 0],
+            ['nama' => 'JIMPITAN', 'kode_akun' => '605', 'tipe' => 'Penampung', 'saldo_awal' => 0],
         ];
 
         AkunRekening::insert($akunRekening);
