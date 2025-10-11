@@ -78,7 +78,7 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td
-                        style="text-align: left; font-size: 14px; @if ($item->jumlah == 0) color: #b03737; @endif">
+                        style="text-align: left; font-size: 14px; @if ($item->jumlah == 0) color: #2e2d2d; @endif">
                         {{ $item->nama }}
                     </td>
                     <td class="amount">{{ number_format($item->persenan, 0, ',', '.') }}</td>

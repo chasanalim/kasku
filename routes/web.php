@@ -85,6 +85,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
 
     Route::get('laporan/export/pdf', [ExportController::class, 'exportPDFlaporan'])->name('laporan.export.pdf');
     Route::get('laporanbuku/export/pdf', [ExportController::class, 'exportPDFlaporanBuku'])->name('laporanbuku.export.pdf');
+    Route::get('laporandesa/export/pdf', [ExportController::class, 'exportPDFlaporanDesa'])->name('laporandesa.export.pdf');
 
     Route::resource('tabungan', TabunganMasjidController::class);
     Route::post('tabungan/verify/{id}', [TabunganMasjidController::class, 'verify'])->name('tabungan.verify');

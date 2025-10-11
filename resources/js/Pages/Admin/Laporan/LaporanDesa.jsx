@@ -153,7 +153,7 @@ export default function LaporanDesa({ title }) {
                             className="btn btn-danger ms-2"
                             onClick={() =>
                                 window.open(
-                                    route("admin.laporan.export.pdf", {
+                                    route("admin.laporandesa.export.pdf", {
                                         bulan: bulan + 1,
                                         tahun,
                                     }),

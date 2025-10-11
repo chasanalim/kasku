@@ -118,7 +118,7 @@ class ExportController extends Controller
         $tanggalAwal = $request->tanggal_awal;
         $tanggalAkhir = $request->tanggal_akhir;
 
-        // Subquery: filter transaksi dan hitung total per jamaah
+        // Subquery: filter transaksi and hitung total per jamaah
         $filteredTransaksi = DB::table('detail_transaksi')
             ->join('transaksi', 'detail_transaksi.transaksi_id', '=', 'transaksi.id')
             ->where('transaksi.jenis', 'pemasukan')
@@ -134,7 +134,7 @@ class ExportController extends Controller
                 DB::raw('SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN 2000 ELSE 0 END) as kk'),
                 DB::raw('SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN detail_transaksi.shodaqah_daerah - 2000 ELSE 0 END) as ppg'),
                 DB::raw('0 as zakat'),
-                DB::raw('SUM(detail_transaksi.jumlah) as jumlah')
+                DB::raw('SUM(detail_transaksi.jumlah - detail_transaksi.shodaqah_kelompok) as jumlah')
             )
             ->groupBy('detail_transaksi.jamaah_id');
 
@@ -189,7 +189,7 @@ class ExportController extends Controller
                 DB::raw('SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN 2000 ELSE 0 END) as kk'),
                 DB::raw('SUM(CASE WHEN detail_transaksi.shodaqah_daerah > 0 THEN detail_transaksi.shodaqah_daerah - 2000 ELSE 0 END) as ppg'),
                 DB::raw('0 as zakat'),
-                DB::raw('SUM(detail_transaksi.jumlah) as jumlah')
+                DB::raw('SUM(detail_transaksi.jumlah - detail_transaksi.shodaqah_kelompok) as jumlah')
             )
             ->groupBy('detail_transaksi.jamaah_id');
 
@@ -414,5 +414,40 @@ class ExportController extends Controller
         ]);
 
         return $pdf->stream('laporanbuku.pdf');
+    }
+
+    public function exportPDFLaporanDesa(Request $request)
+    {
+        $bulan = $request->input('bulan', date('m'));
+        $tahun = $request->input('tahun', date('Y'));
+
+        // Format tanggal awal & akhir bulan ini
+        $tanggal_awal = date("$tahun-$bulan-01");
+        $tanggal_akhir = date("Y-m-t", strtotime($tanggal_awal));
+
+        $jatah = DB::table('jatah_desa')
+            ->select(
+                'id',
+                'tanggal',
+                'keterangan',
+                'jumlah',
+            )
+            ->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
+            ->orderBy('tanggal')
+            ->get();
+
+        // Calculate total
+        $total_jatah = $jatah->sum('jumlah');
+
+        $pdf = app(\Barryvdh\DomPDF\PDF::class);
+        $pdf->setPaper('b5', 'portrait'); // Changed to portrait orientation
+        $pdf->loadView('exports.laporandesa-pdf', [
+            'tanggal_awal' => $tanggal_awal,
+            'tanggal_akhir' => $tanggal_akhir,
+            'jatah' => $jatah,
+            'total_jatah' => $total_jatah
+        ]);
+
+        return $pdf->stream('laporandesa.pdf');
     }
 }
