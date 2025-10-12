@@ -86,7 +86,7 @@ export default function Navbar(props) {
                 return "Posting Jurnal";
 
             // Profile
-            case currentRoute.startsWith("admin.profile"):
+            case currentRoute.startsWith("profile"):
                 return "Profile";
 
             default:
@@ -124,6 +124,14 @@ export default function Navbar(props) {
                         >
                             <NavDropdown.Item
                                 as={Link}
+                                method="get"
+                                href={route("profile.edit")}
+                            >
+                                <i className="bi bi-person me-2"></i> Edit Profile
+                            </NavDropdown.Item>
+                            <NavDropdown.Divider />
+                            <NavDropdown.Item
+                                as={Link}
                                 method="post"
                                 href={route("logout")}
                                 preserveScroll
@@ -131,8 +139,9 @@ export default function Navbar(props) {
                                     window.location.href = "";
                                 }}
                             >
-                                <span>Logout</span>
+                                <span className="text-danger"><i class="bi bi-power"></i> Logout</span>
                             </NavDropdown.Item>
+                            
                         </NavDropdown>
                     </Nav>
                 </div>
