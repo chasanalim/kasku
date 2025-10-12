@@ -12,9 +12,8 @@ export default function Login({ status, canResetPassword }) {
     const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    // Password visibility toggle
     const [showPassword, setShowPassword] = useState(false);
-
-    const togglePassword = () => setShowPassword((prev) => !prev);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -68,38 +67,45 @@ export default function Login({ status, canResetPassword }) {
                     controlId="password"
                 >
                     <Form.Label>Password</Form.Label>
-                    <Form.Control
-                        type={showPassword ? "text" : "password"}
-                        value={data.password}
-                        placeholder="Masukkan Password"
-                        onChange={(e) => setData("password", e.target.value)}
-                        required
-                    />
-
-                    {/* Ikon mata toggle */}
-                    <i
-                        className={`bi ${
-                            showPassword ? "bi-eye-slash" : "bi-eye"
-                        }`}
-                        onClick={togglePassword}
-                        style={{
-                            position: "absolute",
-                            right: "12px",
-                            top: "43px",
-                            cursor: "pointer",
-                            color: "#6c757d",
-                        }}
-                    ></i>
-
+                    <div className="input-group">
+                        <Form.Control
+                            type={showPassword ? "text" : "password"}
+                            value={data.password}
+                            placeholder="Masukkan Password"
+                            onChange={(e) =>
+                                setData("password", e.target.value)
+                            }
+                            required
+                        />
+                        <button
+                            className="btn btn-outline-secondary"
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={
+                                showPassword ? "Hide password" : "Show password"
+                            }
+                        >
+                            {/* <i
+                                className={`bi ${
+                                    showPassword ? "bi-eye-slash" : "bi-eye"
+                                }`}
+                            ></i> */}
+                            {showPassword ? "Hide" : "Show"}
+                        </button>
+                    </div>
                     {errors.password && (
                         <div className="ms-2 mt-1 fs-6 fw-light text-danger">
                             {errors.password}
                         </div>
                     )}
                 </Form.Group>
-                
+
                 {!loading ? (
-                    <Button className="w-100 mt-3" variant="primary" type="submit">
+                    <Button
+                        className="w-100 mt-3"
+                        variant="primary"
+                        type="submit"
+                    >
                         Log In
                     </Button>
                 ) : (
