@@ -104,13 +104,14 @@ export default function Create({
                                                             key={item.id}
                                                             value={item.id}
                                                         >
-                                                            {item.nama} | Rp
+                                                            {item.nama}
+                                                            {/* | Rp
                                                             {Number(
                                                                 item.saldo_awal ||
                                                                     0
                                                             ).toLocaleString(
                                                                 "id-ID"
-                                                            )}
+                                                            )} */}
                                                         </option>
                                                     ))}
                                                 </select>

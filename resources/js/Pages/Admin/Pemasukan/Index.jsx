@@ -196,12 +196,16 @@ export default function Index({ title, flash, infaq, can }) {
                         return parseInt(data).toLocaleString("id-ID");
                     },
                 },
-                {
-                    data: "transaksi.keterangan",
-                    name: "transaksi.keterangan",
-                    orderable: true,
-                    searchable: true,
-                },
+                ...(can.editPemasukan
+                    ? [
+                          {
+                              data: "transaksi.keterangan",
+                              name: "transaksi.keterangan",
+                              orderable: true,
+                              searchable: true,
+                          },
+                      ]
+                    : []),
             ],
             drawCallback: function () {
                 // Initialize tooltips
@@ -352,7 +356,7 @@ export default function Index({ title, flash, infaq, can }) {
                                         className="btn btn-sm btn-primary mb-3 "
                                     >
                                         <i className="bi bi-plus-circle me-2"></i>
-                                        Tambah Pengeluaran Kas
+                                        Tambah Pemasukan Kas
                                     </Link>
                                 )}
                             </div>
@@ -399,28 +403,41 @@ export default function Index({ title, flash, infaq, can }) {
                                             </button>
                                         </div>
                                         <div className="col-auto">
-                                            <button
-                                                className="btn btn-sm btn-success mt-2 me-2"
-                                                onClick={handleMultipleVerify}
-                                                disabled={!selectedIds.length}
-                                            >
-                                                <i className="bi bi-check2-all me-1"></i>
-                                                Verifikasi Terpilih (
-                                                {selectedIds.length})
-                                            </button>
-                                            <button
-                                                className="btn btn-sm btn-danger mt-2"
-                                                onClick={handleMultipleDelete}
-                                                disabled={!selectedIds.length}
-                                            >
-                                                <i className="bi bi-trash me-1"></i>
-                                                Hapus Terpilih (
-                                                {selectedIds.length})
-                                            </button>
+                                            {can.editPemasukan && (
+                                                <>
+                                                    <button
+                                                        className="btn btn-sm btn-success mt-2 me-2"
+                                                        onClick={
+                                                            handleMultipleVerify
+                                                        }
+                                                        disabled={
+                                                            !selectedIds.length
+                                                        }
+                                                    >
+                                                        <i className="bi bi-check2-all me-1"></i>
+                                                        Verifikasi Terpilih (
+                                                        {selectedIds.length})
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-sm btn-danger mt-2"
+                                                        onClick={
+                                                            handleMultipleDelete
+                                                        }
+                                                        disabled={
+                                                            !selectedIds.length
+                                                        }
+                                                    >
+                                                        <i className="bi bi-trash me-1"></i>
+                                                        Hapus Terpilih (
+                                                        {selectedIds.length})
+                                                    </button>{" "}
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="table-responsive">
+                                    {/* {can.editPemasukan && ( */}
                                     <table
                                         ref={tableRef}
                                         className="table table-sm table-hover"
@@ -439,7 +456,9 @@ export default function Index({ title, flash, infaq, can }) {
                                                 <th>TANGGAL</th>
                                                 <th>KAS</th>
                                                 <th>JUMLAH</th>
-                                                <th>KETERANGAN</th>
+                                                {can.editPemasukan && (
+                                                    <th>KETERANGAN</th>
+                                                )}
                                             </tr>
                                         </thead>
                                         <tfoot>
@@ -457,6 +476,7 @@ export default function Index({ title, flash, infaq, can }) {
                                             </tr>
                                         </tfoot>
                                     </table>
+                                    {/* )} */}
                                 </div>
                             </div>
                         </div>

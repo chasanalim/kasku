@@ -61,6 +61,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn() => $request->session()->get('error'),
             ],
             'can' => $request->user() ? [
+                'viewKas' => $request->user()->can('view-kas'),
                 'viewPemasukan' => $request->user()->can('view-pemasukan'),
                 'createPemasukan' => $request->user()->can('add-pemasukan'),
                 'editPemasukan' => $request->user()->can('edit-pemasukan'),
