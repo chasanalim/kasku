@@ -96,7 +96,7 @@ export default function Sidebar() {
                                 </li>
                             </>
                         )}
-                        {can.viewPemasukan && (
+                        {(can.viewPemasukan || can.viewKas) && (
                             <>
                                 <li>
                                     <h6 className="text-uppercase mt-3 menu">
@@ -130,63 +130,72 @@ export default function Sidebar() {
                                             }
                                             id="basic-nav-dropdown"
                                         >
-                                            <NavDropdown.Item
-                                                as={Link}
-                                                method="get"
-                                                href={route(
-                                                    "admin.shodaqah.index"
-                                                )}
-                                                active={route().current(
-                                                    "admin.shodaqah.index"
-                                                )}
-                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                                    route().current(
-                                                        "admin.shodaqah.index"
-                                                    )
-                                                        ? "active"
-                                                        : ""
-                                                }`}
-                                            >
-                                                <span>INFAQ RUTIN</span>
-                                            </NavDropdown.Item>
-                                            <NavDropdown.Item
-                                                as={Link}
-                                                method="get"
-                                                href={route(
-                                                    "admin.infaq.index"
-                                                )}
-                                                active={route().current(
-                                                    "admin.infaq.index"
-                                                )}
-                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                                    route().current(
-                                                        "admin.infaq.index"
-                                                    )
-                                                        ? "active"
-                                                        : ""
-                                                }`}
-                                            >
-                                                <span>SHODAQAH KAS KELOMPOK</span>
-                                            </NavDropdown.Item>
-                                            <NavDropdown.Item
-                                                as={Link}
-                                                method="get"
-                                                href={route(
-                                                    "admin.pemasukan.index"
-                                                )}
-                                                active={route().current(
-                                                    "admin.pemasukan.index"
-                                                )}
-                                                className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
-                                                    route().current(
+                                            {can.viewPemasukan && (
+                                                <>
+                                                    <NavDropdown.Item
+                                                        as={Link}
+                                                        method="get"
+                                                        href={route(
+                                                            "admin.shodaqah.index"
+                                                        )}
+                                                        active={route().current(
+                                                            "admin.shodaqah.index"
+                                                        )}
+                                                        className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                            route().current(
+                                                                "admin.shodaqah.index"
+                                                            )
+                                                                ? "active"
+                                                                : ""
+                                                        }`}
+                                                    >
+                                                        <span>INFAQ RUTIN</span>
+                                                    </NavDropdown.Item>
+                                                    <NavDropdown.Item
+                                                        as={Link}
+                                                        method="get"
+                                                        href={route(
+                                                            "admin.infaq.index"
+                                                        )}
+                                                        active={route().current(
+                                                            "admin.infaq.index"
+                                                        )}
+                                                        className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                            route().current(
+                                                                "admin.infaq.index"
+                                                            )
+                                                                ? "active"
+                                                                : ""
+                                                        }`}
+                                                    >
+                                                        <span>
+                                                            SHODAQAH KAS
+                                                            KELOMPOK
+                                                        </span>
+                                                    </NavDropdown.Item>
+                                                </>
+                                            )}
+                                            {can.viewKas && (
+                                                <NavDropdown.Item
+                                                    as={Link}
+                                                    method="get"
+                                                    href={route(
                                                         "admin.pemasukan.index"
-                                                    )
-                                                        ? "active"
-                                                        : ""
-                                                }`}
-                                            >
-                                                <span>PEMASUKAN KAS</span>
-                                            </NavDropdown.Item>
+                                                    )}
+                                                    active={route().current(
+                                                        "admin.pemasukan.index"
+                                                    )}
+                                                    className={`rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                                        route().current(
+                                                            "admin.pemasukan.index"
+                                                        )
+                                                            ? "active"
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    <span>PEMASUKAN KAS</span>
+                                                </NavDropdown.Item>
+                                            )}
                                         </NavDropdown>
                                     </Nav>
                                 </li>
@@ -411,7 +420,9 @@ export default function Sidebar() {
                                                         : ""
                                                 }`}
                                             >
-                                                <span>LAPORAN SETORAN DESA</span>
+                                                <span>
+                                                    LAPORAN SETORAN DESA
+                                                </span>
                                             </NavDropdown.Item>
                                             <NavDropdown.Item
                                                 as={Link}
@@ -430,7 +441,9 @@ export default function Sidebar() {
                                                         : ""
                                                 }`}
                                             >
-                                                <span>REKAP TABUNGAN MASJID</span>
+                                                <span>
+                                                    REKAP TABUNGAN MASJID
+                                                </span>
                                             </NavDropdown.Item>
                                         </NavDropdown>
                                     </Nav>
@@ -572,7 +585,9 @@ export default function Sidebar() {
                                 </li>
                                 <li>
                                     <NavLink
-                                        href={route("admin.mastertabungan.index")}
+                                        href={route(
+                                            "admin.mastertabungan.index"
+                                        )}
                                         active={route().current(
                                             "admin.mastertabungan.index"
                                         )}

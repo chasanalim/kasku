@@ -1,5 +1,6 @@
 import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, useForm } from "@inertiajs/react";
+import { useState } from "react";
 import { Form } from "react-bootstrap";
 
 export default function Create({
@@ -21,6 +22,8 @@ export default function Create({
     });
 
     // console.log(roles[0].id);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -185,52 +188,117 @@ export default function Create({
                                                 <Form.Label className="required">
                                                     Password
                                                 </Form.Label>
-                                                <Form.Control
-                                                    type="password"
-                                                    value={data.password}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "password",
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    isInvalid={
-                                                        !!errors.password
-                                                    }
-                                                    placeholder="Masukkan Password"
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors.password}
-                                                </Form.Control.Feedback>
+                                                <div className="input-group">
+                                                    <Form.Control
+                                                        type={
+                                                            showPassword
+                                                                ? "text"
+                                                                : "password"
+                                                        }
+                                                        value={data.password}
+                                                        onChange={(e) =>
+                                                            setData(
+                                                                "password",
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        isInvalid={
+                                                            !!errors.password
+                                                        }
+                                                        placeholder="Masukkan Password"
+                                                    />
+                                                    <button
+                                                        className="btn btn-outline-secondary"
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setShowPassword(
+                                                                !showPassword
+                                                            )
+                                                        }
+                                                    >
+                                                        <i
+                                                            className={`bi bi-eye${
+                                                                showPassword
+                                                                    ? "-slash"
+                                                                    : ""
+                                                            }`}
+                                                        ></i>
+                                                    </button>
+                                                    <Form.Control.Feedback type="invalid">
+                                                        {errors.password}
+                                                    </Form.Control.Feedback>
+                                                </div>
+                                                <Form.Text className="text-muted">
+                                                    <small>
+                                                        Password harus memenuhi
+                                                        kriteria berikut:
+                                                        <ul className="mb-0">
+                                                            <li>
+                                                                Minimal 8
+                                                                karakter
+                                                            </li>
+                                                            <li>
+                                                                Minimal 1 huruf
+                                                                kapital
+                                                            </li>
+                                                            <li>
+                                                                Minimal 1 angka
+                                                            </li>
+                                                        </ul>
+                                                    </small>
+                                                </Form.Text>
                                             </Form.Group>
                                         </div>
 
-                                        <div className="col-md-6 offset-md-6">
+                                        <div className="col-md-6">
                                             <Form.Group className="mb-3">
                                                 <Form.Label className="required">
                                                     Konfirmasi Password
                                                 </Form.Label>
-                                                <Form.Control
-                                                    type="password"
-                                                    value={
-                                                        data.password_confirmation
-                                                    }
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "password_confirmation",
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    isInvalid={
-                                                        !!errors.password_confirmation
-                                                    }
-                                                    placeholder="Masukkan Konfirmasi Password"
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    {
-                                                        errors.password_confirmation
-                                                    }
-                                                </Form.Control.Feedback>
+                                                <div className="input-group">
+                                                    <Form.Control
+                                                        type={
+                                                            showConfirmPassword
+                                                                ? "text"
+                                                                : "password"
+                                                        }
+                                                        value={
+                                                            data.password_confirmation
+                                                        }
+                                                        onChange={(e) =>
+                                                            setData(
+                                                                "password_confirmation",
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        isInvalid={
+                                                            !!errors.password_confirmation
+                                                        }
+                                                        placeholder="Masukkan Konfirmasi Password"
+                                                    />
+                                                    <button
+                                                        className="btn btn-outline-secondary"
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setShowConfirmPassword(
+                                                                !showConfirmPassword
+                                                            )
+                                                        }
+                                                    >
+                                                        <i
+                                                            className={`bi bi-eye${
+                                                                showConfirmPassword
+                                                                    ? "-slash"
+                                                                    : ""
+                                                            }`}
+                                                        ></i>
+                                                    </button>
+                                                    <Form.Control.Feedback type="invalid">
+                                                        {
+                                                            errors.password_confirmation
+                                                        }
+                                                    </Form.Control.Feedback>
+                                                </div>
                                             </Form.Group>
                                         </div>
                                     </div>

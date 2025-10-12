@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('phone_number', 25)->nullable()->unique();
             $table->string('password');
             $table->rememberToken();
+            $table->timestamp('last_login')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();

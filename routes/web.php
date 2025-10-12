@@ -22,11 +22,13 @@ use App\Http\Controllers\Admin\PengeluaranController;
 use App\Http\Controllers\Admin\MasterTabunganController;
 use App\Http\Controllers\Admin\TabunganMasjidController;
 
-Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
+Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     // Route::get('/dashboard', function () {
     //     return Inertia::render('Admin/Dashboard/Dashboard');
     // })->name('dashboard');
@@ -59,8 +61,8 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::get('jurnal', [LaporanController::class, 'jurnal'])->name('jurnal');
     Route::get('rekap-tabungan-masjid', [LaporanController::class, 'rekapTabungan'])->name('laporan.rekap-tabungan');
     Route::get('laporan/tabungan-detail', [LaporanController::class, 'getTabunganDetail'])
-    ->name('laporan.tabungan-detail');
-    
+        ->name('laporan.tabungan-detail');
+
     Route::post('sync', [JatahDesaController::class, 'sync'])->name('sync');
 
     Route::resource('pengeluaran', PengeluaranController::class);

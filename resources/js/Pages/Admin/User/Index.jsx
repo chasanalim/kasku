@@ -37,17 +37,21 @@ export default function Index({ title, can, flash }) {
                     orderable: true,
                     searchable: true,
                 },
-                {
-                    data: "nik",
-                    name: "nik",
-                },
+                // {
+                //     data: "nik",
+                //     name: "nik",
+                // },
                 {
                     data: "email",
                     name: "email",
                 },
+                // {
+                //     data: "phone_number",
+                //     name: "phone_number",
+                // },
                 {
-                    data: "phone_number",
-                    name: "phone_number",
+                    data: "last_login",
+                    name: "last_login",
                 },
                 {
                     data: "roles",
@@ -174,9 +178,10 @@ export default function Index({ title, can, flash }) {
                                             <tr>
                                                 <th>No</th>
                                                 <th>Nama</th>
-                                                <th>NIK</th>
+                                                {/* <th>NIK</th> */}
                                                 <th>Email</th>
-                                                <th>No Hp</th>
+                                                {/* <th>No Hp</th> */}
+                                                <th>Last Login</th>
                                                 <th>Role</th>
                                                 <th>Aksi</th>
                                             </tr>
