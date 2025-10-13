@@ -2,29 +2,40 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use App\Models\Jamaah;
+use App\Models\JatahDesa;
 use App\Models\Transaksi;
 use App\Models\AkunRekening;
 use Illuminate\Http\Request;
 use App\Models\DetailTransaksi;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\JatahDesa;
 
 class JatahDesaController extends Controller
 {
     public function sync(Request $request)
     {
         try {
+            // Validate request
+            $request->validate([
+                'bulan' => 'required|numeric|min:1|max:12',
+                'tahun' => 'required|numeric|min:2000|max:2100',
+                'jatahProker' => 'required|numeric|min:0',
+                'infaqJumat' => 'required|numeric|min:0'
+            ]);
+
             // Check if data already exists for the selected month
             $existingData = JatahDesa::whereMonth('tanggal', $request->bulan)
                 ->whereYear('tanggal', $request->tahun)
                 ->exists();
 
+            $namaBulan = Carbon::create()->month($request->bulan)->translatedFormat('F');
+
             if ($existingData) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Data sudah disinkronisasi untuk bulan ' . $request->bulan . ' ini '
+                    'message' => 'Data sudah disinkronisasi untuk bulan ' . $namaBulan . ' ini '
                 ], 422);
             }
 
@@ -56,19 +67,22 @@ class JatahDesaController extends Controller
                 ]);
 
                 $akun = $accounts['ir'];
-                $transaksi = Transaksi::create([
-                    'tanggal' =>  date("Y-m-d", strtotime("{$request->tahun}-{$request->bulan}-01")),
-                    'akun_id' => $akun->id,
-                    'keterangan' => 'Setor ke Desa',
-                    'jenis' => 'pengeluaran'
-                ]);
 
-                DetailTransaksi::create([
-                    'transaksi_id' => $transaksi->id,
-                    'jumlah' => $accounts['ir']->saldo_awal,
-                ]);
+                if ($accounts['ir']->saldo_awal > 0) {
+                    $transaksi = Transaksi::create([
+                        'tanggal' =>  date("Y-m-d", strtotime("{$request->tahun}-{$request->bulan}-01")),
+                        'akun_id' => $akun->id,
+                        'keterangan' => 'Setor ke Desa',
+                        'jenis' => 'pengeluaran'
+                    ]);
 
-                $akun->decrement('saldo_awal', $accounts['ir']->saldo_awal);
+                    DetailTransaksi::create([
+                        'transaksi_id' => $transaksi->id,
+                        'jumlah' => $accounts['ir']->saldo_awal,
+                    ]);
+
+                    $akun->decrement('saldo_awal', $accounts['ir']->saldo_awal);
+                }
             }
 
             // Sync Dapur Pusat
@@ -281,7 +295,7 @@ class JatahDesaController extends Controller
                         'keterangan' => 'Mencukupi kekurangan Jimpitan',
                         'jenis' => 'pengeluaran'
                     ]);
-                    
+
                     DetailTransaksi::create([
                         'transaksi_id' => $transaksi->id,
                         'jumlah' => $sisaJimpitan * -1,
@@ -303,7 +317,6 @@ class JatahDesaController extends Controller
                     ]);
 
                     $akun->decrement('saldo_awal', $accounts['jimpitan']->saldo_awal);
-
                 } else {
                     $akun = $accounts['kas_kelompok'];
                     $transaksi = Transaksi::create([
@@ -312,14 +325,14 @@ class JatahDesaController extends Controller
                         'keterangan' => 'Sisa Jimpitan dari Amplop IR',
                         'jenis' => 'pemasukan_kas'
                     ]);
-                    
+
                     DetailTransaksi::create([
                         'transaksi_id' => $transaksi->id,
                         'jumlah' => $sisaJimpitan,
                     ]);
 
                     $akun->increment('saldo_awal', $sisaJimpitan);
-                    
+
                     $akun = $accounts['jimpitan'];
                     $transaksi = Transaksi::create([
                         'tanggal' =>  date("Y-m-d", strtotime("{$request->tahun}-{$request->bulan}-01")),
@@ -327,7 +340,7 @@ class JatahDesaController extends Controller
                         'keterangan' => 'Setor Jimpitan ke Desa',
                         'jenis' => 'pengeluaran'
                     ]);
-                    
+
                     DetailTransaksi::create([
                         'transaksi_id' => $transaksi->id,
                         'jumlah' => $jatahJimpitan,
@@ -342,7 +355,7 @@ class JatahDesaController extends Controller
                         'keterangan' => 'Masuk ke Kas Kelompok',
                         'jenis' => 'pengeluaran'
                     ]);
-                    
+
                     DetailTransaksi::create([
                         'transaksi_id' => $transaksi->id,
                         'jumlah' => $sisaJimpitan,
@@ -375,7 +388,53 @@ class JatahDesaController extends Controller
                 $akun->decrement('saldo_awal', $accounts['masjid']->saldo_awal);
             }
 
-            // 
+            if ($accounts['jatah_proker']) {
+                JatahDesa::create([
+                    'tanggal' => date("Y-m-d", strtotime("{$request->tahun}-{$request->bulan}-01")),
+                    'jenis' => 'berubah',
+                    'keterangan' => 'JATAH PROKER',
+                    'jumlah' => $request->jatahProker,
+                ]);
+
+                $akun = $accounts['jatah_proker'];
+                $transaksi = Transaksi::create([
+                    'tanggal' =>  date("Y-m-d", strtotime("{$request->tahun}-{$request->bulan}-01")),
+                    'akun_id' => $akun->id,
+                    'keterangan' => 'Setor ke Desa',
+                    'jenis' => 'pengeluaran'
+                ]);
+                DetailTransaksi::create([
+                    'transaksi_id' => $transaksi->id,
+                    'jumlah' => $request->jatahProker,
+                ]);
+
+                $akun->decrement('saldo_awal', $request->jatahProker);
+            }
+
+            if ($accounts['kas_kelompok']) {
+                JatahDesa::create([
+                    'tanggal' => date("Y-m-d", strtotime("{$request->tahun}-{$request->bulan}-01")),
+                    'jenis' => 'berubah',
+                    'keterangan' => 'INFAQ 2/3 JUMATAN',
+                    'jumlah' => $request->infaqJumat,
+                ]);
+
+                $akun = $accounts['kas_kelompok'];
+                $transaksi = Transaksi::create([
+                    'tanggal' =>  date("Y-m-d", strtotime("{$request->tahun}-{$request->bulan}-01")),
+                    'akun_id' => $akun->id,
+                    'keterangan' => 'Setor Infaq 2/3 Jumat ke Desa',
+                    'jenis' => 'pengeluaran_kas'
+                ]);
+                DetailTransaksi::create([
+                    'transaksi_id' => $transaksi->id,
+                    'jumlah' => $request->infaqJumat,
+                ]);
+
+                $akun->decrement('saldo_awal', $request->infaqJumat);
+            }
+
+            //
 
             DB::commit();
 

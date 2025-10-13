@@ -18,12 +18,17 @@ const bulanList = [
     "Desember",
 ];
 
-export default function LaporanDesa({ title }) {
+export default function LaporanDesa({ title, can }) {
     const [jatah, setJatah] = useState([]);
     const [totalJatah, setTotalJatah] = useState(0);
     const [loading, setLoading] = useState(false);
     const [bulan, setBulan] = useState(new Date().getMonth());
     const [tahun, setTahun] = useState(new Date().getFullYear());
+    const [showModal, setShowModal] = useState(false);
+    const [formData, setFormData] = useState({
+        jatahProker: "",
+        infaqJumat: "",
+    });
 
     // Fetch data function
     const fetchData = useCallback(() => {
@@ -51,21 +56,6 @@ export default function LaporanDesa({ title }) {
         fetchData();
     }, [fetchData]);
 
-    // Delete handler
-    const hapusData = (id) => {
-        if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-            axios
-                .delete(route("admin.jatah.destroy", id))
-                .then(() => {
-                    fetchData();
-                })
-                .catch((error) => {
-                    console.error("Error deleting data:", error);
-                    alert("Gagal menghapus data");
-                });
-        }
-    };
-
     // Tahun dinamis (5 tahun ke belakang)
     const tahunList = [];
     for (
@@ -75,6 +65,56 @@ export default function LaporanDesa({ title }) {
     ) {
         tahunList.push(i);
     }
+
+    // Handle form input changes with number formatting
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        // Remove non-numeric characters except dots
+        const numericValue = value.replace(/[^\d]/g, "");
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: numericValue ? Number(numericValue).toLocaleString("id-ID") : "",
+        }));
+    };
+
+    // Handle sync with validation
+    const handleSync = () => {
+        if (!formData.jatahProker || !formData.infaqJumat) {
+            alert("Semua field harus diisi!");
+            return;
+        }
+
+        // Parse the formatted numbers back to numeric values
+        const jatahProker = parseFloat(formData.jatahProker.replace(/\./g, ""));
+        const infaqJumat = parseFloat(formData.infaqJumat.replace(/\./g, ""));
+
+        setLoading(true);
+        axios
+            .post(route("admin.sync"), {
+                bulan: bulan + 1,
+                tahun: tahun,
+                jatahProker,
+                infaqJumat,
+            })
+            .then((response) => {
+                if (response.data.status === "success") {
+                    alert(response.data.message);
+                    fetchData();
+                    setShowModal(false);
+                    setFormData({ jatahProker: "", infaqJumat: "" });
+                }
+            })
+            .catch((error) => {
+                console.error("Sync failed:", error);
+                if (error.response?.data?.message) {
+                    alert(error.response.data.message);
+                } else {
+                    alert("Gagal melakukan sinkronisasi data");
+                }
+            })
+            .finally(() => setLoading(false));
+    };
 
     return (
         <AdminLayout>
@@ -110,45 +150,16 @@ export default function LaporanDesa({ title }) {
                         </select>
                     </div>
                     <div className="col-auto ms-auto">
-                        <button
-                            className="btn btn-success"
-                            onClick={() => {
-                                setLoading(true);
-                                axios
-                                    .post(route("admin.sync"), {
-                                        bulan: bulan + 1,
-                                        tahun: tahun,
-                                    })
-                                    .then((response) => {
-                                        if (
-                                            response.data.status === "success"
-                                        ) {
-                                            // Show success toast/alert
-                                            alert(response.data.message);
-                                            // Refresh data after sync
-                                            fetchData();
-                                        }
-                                    })
-                                    .catch((error) => {
-                                        console.error("Sync failed:", error);
-                                        // Show error message from server if available
-                                        if (error.response?.data?.message) {
-                                            alert(error.response.data.message);
-                                        } else {
-                                            alert(
-                                                "Gagal melakukan sinkronisasi data"
-                                            );
-                                        }
-                                    })
-                                    .finally(() => {
-                                        setLoading(false);
-                                    });
-                            }}
-                            disabled={loading}
-                        >
-                            <i className="bi bi-arrow-repeat me-1"></i>
-                            {loading ? "PROCESSING..." : "SYNCHRONIZE"}
-                        </button>
+                        {can.createLaporan && (
+                            <button
+                                className="btn btn-success"
+                                onClick={() => setShowModal(true)}
+                                disabled={loading}
+                            >
+                                <i className="bi bi-arrow-repeat me-1"></i>
+                                SYNCHRONIZE
+                            </button>
+                        )}
                         <button
                             className="btn btn-danger ms-2"
                             onClick={() =>
@@ -263,6 +274,92 @@ export default function LaporanDesa({ title }) {
                     </div>
                 )}
             </div>
+
+            {/* Add Modal Form */}
+            {showModal && (
+                <div
+                    className="modal d-block"
+                    tabIndex="-1"
+                    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">
+                                    Input Data Sinkronisasi
+                                </h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    onClick={() => setShowModal(false)}
+                                    disabled={loading}
+                                ></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="mb-3">
+                                    <label className="form-label">
+                                        Jatah Proker
+                                    </label>
+                                    <div className="input-group">
+                                        <span className="input-group-text">Rp</span>
+                                        <input
+                                            type="text" /* Changed from number to text */
+                                            className="form-control text-end" /* Added text-end */
+                                            name="jatahProker"
+                                            value={formData.jatahProker}
+                                            onChange={handleInputChange}
+                                            placeholder="Masukkan nominal"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">
+                                        Infaq 2/3 Jumatan
+                                    </label>
+                                    <div className="input-group">
+                                        <span className="input-group-text">Rp</span>
+                                        <input
+                                            type="text" /* Changed from number to text */
+                                            className="form-control text-end" /* Added text-end */
+                                            name="infaqJumat"
+                                            value={formData.infaqJumat}
+                                            onChange={handleInputChange}
+                                            placeholder="Masukkan nominal"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() => setShowModal(false)}
+                                    disabled={loading}
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={handleSync}
+                                    disabled={loading}
+                                >
+                                    {loading ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-1"></span>
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        "Sinkronkan"
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }
