@@ -396,33 +396,55 @@ export default function Index({ title, flash, tabungan, can }) {
                                             </button>
                                         </div>
                                         <div className="col-auto">
-                                            <button
-                                                className="btn btn-sm btn-success mt-2 me-2"
-                                                onClick={handleMultipleVerify}
-                                                disabled={!selectedIds.length}
-                                            >
-                                                <i className="bi bi-check2-all me-1"></i>
-                                                Verifikasi Terpilih (
-                                                {selectedIds.length})
-                                            </button>
-                                            <button
-                                                className="btn btn-sm btn-danger mt-2"
-                                                onClick={handleMultipleDelete}
-                                                disabled={!selectedIds.length}
-                                            >
-                                                <i className="bi bi-trash me-1"></i>
-                                                Hapus Terpilih (
-                                                {selectedIds.length})
-                                            </button>
+                                            {can.deletePemasukan && (
+                                                <>
+                                                    <button
+                                                        className="btn btn-sm btn-success mt-2 me-2"
+                                                        onClick={
+                                                            handleMultipleVerify
+                                                        }
+                                                        disabled={
+                                                            !selectedIds.length
+                                                        }
+                                                    >
+                                                        <i className="bi bi-check2-all me-1"></i>
+                                                        Verifikasi Terpilih (
+                                                        {selectedIds.length})
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-sm btn-danger mt-2"
+                                                        onClick={
+                                                            handleMultipleDelete
+                                                        }
+                                                        disabled={
+                                                            !selectedIds.length
+                                                        }
+                                                    >
+                                                        <i className="bi bi-trash me-1"></i>
+                                                        Hapus Terpilih (
+                                                        {selectedIds.length})
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                         <div className="col-auto">
-                                            <button
-                                                className="btn btn-sm btn-secondary mt-2 me-2"
-                                                onClick={() => router.visit(route('admin.laporan.rekap-tabungan'))}
-                                            >
-                                                <i className="bi bi-file-earmark-spreadsheet me-1"></i>
-                                                Laporan
-                                            </button>
+                                            {can.viewLaporan && (
+                                                <>
+                                                    <button
+                                                        className="btn btn-sm btn-secondary mt-2 me-2"
+                                                        onClick={() =>
+                                                            router.visit(
+                                                                route(
+                                                                    "admin.laporan.rekap-tabungan"
+                                                                )
+                                                            )
+                                                        }
+                                                    >
+                                                        <i className="bi bi-file-earmark-spreadsheet me-1"></i>
+                                                        Laporan
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

@@ -175,7 +175,7 @@ export default function Sidebar() {
                                                     </NavDropdown.Item>
                                                 </>
                                             )}
-                                            {can.viewKas && (
+                                            {(can.viewPemasukan || can.viewKas) && (
                                                 <NavDropdown.Item
                                                     as={Link}
                                                     method="get"

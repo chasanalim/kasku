@@ -403,7 +403,7 @@ export default function Index({ title, flash, infaq, can }) {
                                             </button>
                                         </div>
                                         <div className="col-auto">
-                                            {can.editPemasukan && (
+                                            {can.deletePemasukan && (
                                                 <>
                                                     <button
                                                         className="btn btn-sm btn-success mt-2 me-2"
