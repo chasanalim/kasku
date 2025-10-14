@@ -450,7 +450,8 @@ export default function Sidebar() {
                                 </li>
                             </>
                         )}
-                        {can.viewQurban && (
+
+                        {/* {can.viewQurban && (
                             <>
                                 <li>
                                     <h6 className="text-uppercase mt-3 menu">
@@ -524,7 +525,7 @@ export default function Sidebar() {
                                     </Nav>
                                 </li>
                             </>
-                        )}
+                        )} */}
 
                         {can.viewQurban && (
                             <>
@@ -602,6 +603,28 @@ export default function Sidebar() {
                                         <i className="bi bi-person-fill-lock fs-5"></i>
                                         <span className="text-white mt-1 ms-2">
                                             Data Master Tabungan
+                                        </span>
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink
+                                        href={route(
+                                            "admin.jatah_desa.index"
+                                        )}
+                                        active={route().current(
+                                            "admin.jatah_desa.index"
+                                        )}
+                                        className={`sidebar-link rounded-3 py-2 px-3 mb-1 d-flex text-decoration-none text-white ${
+                                            route().current(
+                                                "admin.jatah_desa.index"
+                                            )
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                    >
+                                        <i className="bi bi-person-fill-lock fs-5"></i>
+                                        <span className="text-white mt-1 ms-2">
+                                            Master Jatah Desa
                                         </span>
                                     </NavLink>
                                 </li>
