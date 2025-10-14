@@ -46,6 +46,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::resource('shodaqah', ShodaqahController::class);
     Route::post('shodaqah/verify/{id}', [ShodaqahController::class, 'verify'])->name('shodaqah.verify');
     Route::post('shodaqah/verify-multiple', [ShodaqahController::class, 'verifyMultiple'])->name('shodaqah.verify-multiple');
+
     Route::delete('shodaqah/destroy-multiple', [ShodaqahController::class, 'destroyMultiple'])->name('shodaqah.destroy-multiple');
 
     Route::resource('infaq', InfaqController::class);
@@ -64,6 +65,8 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
         ->name('laporan.tabungan-detail');
 
     Route::post('sync', [JatahDesaController::class, 'sync'])->name('sync');
+    
+    Route::resource('jatah_desa', JatahDesaController::class);
 
     Route::resource('pengeluaran', PengeluaranController::class);
     Route::post('pengeluaran/verify/{id}', [PengeluaranController::class, 'verify'])->name('pengeluaran.verify');
@@ -94,5 +97,8 @@ Route::prefix('admin')->as('admin.')->middleware('auth')->group(function () {
     Route::post('tabungan/verify-multiple', [TabunganMasjidController::class, 'verifyMultiple'])->name('tabungan.verify-multiple');
     Route::delete('tabungan/destroy-multiple', [TabunganMasjidController::class, 'destroyMultiple'])->name('tabungan.destroy-multiple');
 });
+
+
+
 
 require __DIR__ . '/auth.php';

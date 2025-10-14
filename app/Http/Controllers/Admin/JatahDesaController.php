@@ -3,19 +3,141 @@
 namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
+use Inertia\Inertia;
 use App\Models\Jamaah;
 use App\Models\JatahDesa;
 use App\Models\Transaksi;
 use App\Models\AkunRekening;
 use Illuminate\Http\Request;
 use App\Models\DetailTransaksi;
+use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\MasterJatahDesa;
 
 class JatahDesaController extends Controller
 {
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        if ($request->wantsJson()) {
+            $data = MasterJatahDesa::query();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    return [
+                        'edit_url' => route('admin.jatah_desa.edit', $row->id),
+                        'delete_url' => route('admin.jatah_desa.destroy', $row->id)
+                    ];
+                })
+                ->make(true);
+        }
+
+        return Inertia::render('Admin/MasterJatahDesa/Index', [
+            'title' => 'Master Jatah Desa',
+            'flash' => [
+                'message' => session('message')
+            ],
+        ]);
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return Inertia::render('Admin/MasterJatahDesa/Create', [
+            'title' => 'Tambah Master Jatah Desa',
+            'action' => route('admin.jatah_desa.store'),
+            'method' => 'POST',
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'jatah_desa' => 'required|string|max:255',
+            'jumlah' => 'required',
+        ]);
+
+        MasterJatahDesa::create([
+            'jatah_desa' => $request->jatah_desa,
+            'jumlah' => $request->jumlah,
+        ]);
+
+        return redirect()->route('admin.jatah_desa.index')
+            ->with('message', 'Master Jatah Data Desa berhasil ditambahkan');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $jatah = MasterJatahDesa::findOrFail($id);
+
+        return Inertia::render('Admin/MasterJatahDesa/Create', [
+            'title' => 'Edit Master Jatah Desa',
+            'jatah' => $jatah,
+            'action' => route('admin.jatah_desa.update', $jatah->id),
+            'method' => 'PUT',
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $jatah = MasterJatahDesa::findOrFail($id);
+
+        $request->validate([
+            'jatah_desa' => 'required',
+            'jumlah' => 'required',
+        ]);
+
+        $jatah->update([
+            'jatah_desa' => $request->jatah_desa,
+            'jumlah' => $request->jumlah,
+        ]);
+
+        return redirect()->route('admin.jatah_desa.index')
+            ->with('message', 'Master Jatah Desa berhasil diubah');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $jatah = MasterJatahDesa::findOrFail($id);
+        $jatah->delete();
+
+        return redirect()->route('admin.jatah_desa.index')->with('message', 'Master Jatah Desa berhasil dihapus');
+    }
+
+
+
     public function sync(Request $request)
     {
+
+
         try {
             // Validate request
             $request->validate([
@@ -87,7 +209,7 @@ class JatahDesaController extends Controller
 
             // Sync Dapur Pusat
             if ($accounts['dapur_pusat']) {
-                $jatahDapurPusat = 900000;
+                $jatahDapurPusat = MasterJatahDesa::where('jatah_desa', 'DAPUR PUSAT / MINI')->first()->jumlah ?? 0;
                 JatahDesa::create([
                     'tanggal' => date("Y-m-d", strtotime("{$request->tahun}-{$request->bulan}-01")),
                     'jenis' => 'tetap',
@@ -116,10 +238,10 @@ class JatahDesaController extends Controller
 
             // Sync Shodaqah Daerah (minus 2000)
             if ($accounts['shodaqah_daerah']) {
-                $jatahPPG = 200000;
-                $jatahMTDaerah = 200000;
-                $jatahKeamananPondok = 50000;
-                $jatahKK = 50000;
+                $jatahPPG = MasterJatahDesa::where('jatah_desa', 'PPG')->first()->jumlah ?? 0;;
+                $jatahMTDaerah = MasterJatahDesa::where('jatah_desa', 'MT DAERAH')->first()->jumlah ?? 0;;
+                $jatahKeamananPondok = MasterJatahDesa::where('jatah_desa', 'KEAMANAN PONDOK')->first()->jumlah ?? 0;;
+                $jatahKK = MasterJatahDesa::where('jatah_desa', 'KK')->first()->jumlah ?? 0;;
 
                 JatahDesa::create([
                     'tanggal' => date("Y-m-d", strtotime("{$request->tahun}-{$request->bulan}-01")),
@@ -276,7 +398,7 @@ class JatahDesaController extends Controller
             }
 
             if ($accounts['jimpitan']) {
-                $jatahJimpitan = 100000;
+                $jatahJimpitan = MasterJatahDesa::where('jatah_desa', 'JIMPITAN')->first()->jumlah ?? 0;;
 
                 JatahDesa::create([
                     'tanggal' => date("Y-m-d", strtotime("{$request->tahun}-{$request->bulan}-01")),
