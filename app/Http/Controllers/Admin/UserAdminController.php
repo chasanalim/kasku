@@ -114,6 +114,7 @@ class UserAdminController extends Controller implements HasMiddleware
             'email' => $request->email,
             'phone_number' => $formattedNoHp,
             'password' => Hash::make($request->password),
+            "last_login" => now(),
         ]);
 
         $user->assignRole($request->role);
