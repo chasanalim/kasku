@@ -73,7 +73,7 @@ class PengeluaranController extends Controller
     public function create()
     {
         $akun = AkunRekening::where('tipe', 'kas')
-            ->orWhere('tipe', 'penampung')
+            ->where('kode_akun', '!=', '101')
             ->get();
         return Inertia::render('Admin/Pengeluaran/Create', [
             'title' => 'Tambah Pengeluaran Kas',
@@ -98,7 +98,7 @@ class PengeluaranController extends Controller
 
         DB::transaction(function () use ($request) {
             if ($request->jumlah > 0) {
-                $akun = AkunRekening::where('id',$request->akun_id)->first();
+                $akun = AkunRekening::where('id', $request->akun_id)->first();
                 $akun->decrement('saldo_awal', $request->jumlah);
                 $transaksi = Transaksi::create([
                     'tanggal' => $request->tanggal,
@@ -111,7 +111,6 @@ class PengeluaranController extends Controller
                     'jumlah' => $request->jumlah,
                 ]);
             }
-
         });
 
         return redirect()->route('admin.pengeluaran.index')
@@ -209,7 +208,6 @@ class PengeluaranController extends Controller
 
             return redirect()->route('admin.pengeluaran.index')->with('message', 'Data Pengeluaran berhasil dihapus');
         });
-
     }
 
     public function verify(string $id)

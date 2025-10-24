@@ -13,6 +13,7 @@ use App\Models\AkunRekening;
 
 class LaporanController extends Controller
 {
+    
     public function rekapShodaqah(Request $request)
     {
         if ($request->wantsJson()) {

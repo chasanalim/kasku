@@ -71,7 +71,9 @@ class PemasukanController extends Controller
      */
     public function create()
     {
-        $akun = AkunRekening::where('tipe', 'kas')->get();
+        $akun = AkunRekening::where('tipe', 'kas')
+            ->where('kode_akun', '!=', '101')
+            ->get();
         return Inertia::render('Admin/Pemasukan/Create', [
             'title' => 'Tambah Pemasukan Kas',
             'action' => route('admin.pemasukan.store'),

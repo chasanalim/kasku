@@ -119,7 +119,7 @@ export default function Login({ status, canResetPassword }) {
                     </Button>
                 )}
                 <p className="text-muted text-center mt-3">
-                    Created and Developed by <a href="https://www.chasanalim.my.id/"> Chasanalim Tech </a>
+                    Created and Developed by <a href="https://www.chasanalim.my.id/" target="_blank"> Chasanalim Tech </a>
                 </p>
                 {/* <div className="d-grid justify-content-end">
                     <Button
