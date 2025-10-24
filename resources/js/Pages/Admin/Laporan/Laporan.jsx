@@ -274,7 +274,7 @@ export default function Laporan({ title }) {
                                                 <th className="text-end text-primary">
                                                     Rp{" "}
                                                     {(
-                                                        Number(saldoAkhir) +
+                                                        
                                                         Number(totalPemasukan) -
                                                         Number(totalPengeluaran)
                                                     ).toLocaleString("id-ID")}
