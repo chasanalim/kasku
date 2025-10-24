@@ -499,12 +499,32 @@ class ShodaqahController extends Controller
 
         DB::beginTransaction();
         try {
-            DetailTransaksi::whereIn('id', $request->ids)->delete();
+            // Get all detail transaksi with their transactions
+            $details = DetailTransaksi::with('transaksi', 'transaksi.akun')
+                ->whereIn('id', $request->ids)
+                ->get();
+
+            foreach ($details as $detail) {
+                // Decrease account balance
+                if ($detail->transaksi && $detail->transaksi->akun) {
+                    $detail->transaksi->akun->increment('saldo_awal', $detail->jumlah);
+                }
+
+                // Delete transaction and its details
+                if ($detail->transaksi) {
+                    $detail->transaksi->delete();
+                }
+                $detail->delete();
+            }
+
             DB::commit();
-            return redirect()->route('admin.shodaqah.index')->with('message', 'Data Shodaqah Jamaah berhasil dihapus');
+            return redirect()->route('admin.shodaqah.index')
+                ->with('message', 'Data Shodaqah Jamaah berhasil dihapus');
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Gagal menghapus data'], 500);
+            return response()->json([
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

@@ -319,6 +319,7 @@ class ExportController extends Controller
     {
         $bulan = $request->input('bulan', date('m'));
         $tahun = $request->input('tahun', date('Y'));
+        $jenis = $request->input('jenis', 'ku'); // Add jenis parameter with default 'ku'
 
         // Format tanggal awal & akhir bulan ini
         $tanggal_awal = date("$tahun-$bulan-01");
@@ -329,8 +330,12 @@ class ExportController extends Controller
         $tahun_lalu = $bulan == 1 ? $tahun - 1 : $tahun;
         $tanggal_akhir_bulan_lalu = date("Y-m-t", strtotime("$tahun_lalu-$bulan_lalu-01"));
 
-        // Ambil semua akun kas
-        $akun = AkunRekening::where('tipe', 'kas')->get();
+        // Ambil semua akun kas berdasarkan jenis
+        if ($jenis == 'all') {
+            $akun = AkunRekening::where('tipe', 'kas')->get();
+        } else {
+            $akun = AkunRekening::whereIn('kode_akun', [101, 102, 103, 104, 105, 106, 114])->get();
+        }
 
         // Prepare array untuk menyimpan data akun yang sudah diolah
         $processed_akun = [];
@@ -409,8 +414,9 @@ class ExportController extends Controller
         $pdf->loadView('exports.laporanbuku-pdf', [
             'tanggal_awal' => $tanggal_awal,
             'tanggal_akhir' => $tanggal_akhir,
-            'akun' => $processed_akun, // Kirim data yang sudah diolah
-            'total' => $total
+            'akun' => $processed_akun,
+            'total' => $total,
+            'jenis' => $jenis // Add jenis to view data
         ]);
 
         return $pdf->stream('laporanbuku.pdf');

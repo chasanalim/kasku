@@ -22,6 +22,7 @@ export default function BukuBesar({ title }) {
     const today = new Date();
     const [bulan, setBulan] = useState(today.getMonth());
     const [tahun, setTahun] = useState(today.getFullYear());
+    const [jenis, setJenis] = useState('ku'); // Add jenis state with default 'ku'
     const [loading, setLoading] = useState(false);
 
     // Update state
@@ -38,7 +39,11 @@ export default function BukuBesar({ title }) {
         setLoading(true);
         try {
             const res = await axios.get(route("admin.buku-besar"), {
-                params: { bulan: bulan + 1, tahun },
+                params: {
+                    bulan: bulan + 1,
+                    tahun,
+                    jenis // Add jenis parameter
+                },
             });
             setAkun(res.data.akun || []);
             setTotal(res.data.total || {});
@@ -56,7 +61,7 @@ export default function BukuBesar({ title }) {
 
     useEffect(() => {
         fetchData();
-    }, [bulan, tahun]);
+    }, [bulan, tahun, jenis]); // Add jenis to dependencies
 
     // Tahun dinamis (5 tahun ke belakang)
     const tahunList = [];
@@ -97,6 +102,17 @@ export default function BukuBesar({ title }) {
                             ))}
                         </select>
                     </div>
+                    <div className="col-md-2">
+                        <label className="fw-bold">Jenis</label>
+                        <select
+                            className="form-select"
+                            value={jenis}
+                            onChange={(e) => setJenis(e.target.value)}
+                        >
+                            <option value="ku">KU</option>
+                            <option value="all">ALL</option>
+                        </select>
+                    </div>
                     <div className="col-auto ms-auto">
                         <button
                             className="btn btn-danger"
@@ -105,6 +121,7 @@ export default function BukuBesar({ title }) {
                                     route("admin.laporanbuku.export.pdf", {
                                         bulan: bulan + 1,
                                         tahun,
+                                        jenis // Add jenis parameter
                                     }),
                                     "_blank"
                                 )

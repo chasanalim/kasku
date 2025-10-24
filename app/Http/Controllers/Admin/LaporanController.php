@@ -326,6 +326,7 @@ class LaporanController extends Controller
         if ($request->wantsJson()) {
             $bulan = $request->input('bulan', date('m'));
             $tahun = $request->input('tahun', date('Y'));
+            $jenis = $request->input('jenis');
 
             // Format tanggal awal & akhir bulan ini
             $tanggal_awal = date("$tahun-$bulan-01");
@@ -337,7 +338,12 @@ class LaporanController extends Controller
             $tanggal_akhir_bulan_lalu = date("Y-m-t", strtotime("$tahun_lalu-$bulan_lalu-01"));
 
             // Ambil semua akun kas
-            $akun = AkunRekening::where('tipe', 'kas')->get();
+
+            if ($jenis == 'all') {
+                $akun = AkunRekening::where('tipe', 'kas')->get();
+            } else {
+                $akun = AkunRekening::whereIn('kode_akun', [101, 102, 103, 104, 105, 106, 114])->get();
+            }
 
             $data_akun = [];
             $total = [
