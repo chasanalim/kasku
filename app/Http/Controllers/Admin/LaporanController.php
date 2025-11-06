@@ -13,7 +13,7 @@ use App\Models\AkunRekening;
 
 class LaporanController extends Controller
 {
-    
+
     public function rekapShodaqah(Request $request)
     {
         if ($request->wantsJson()) {
@@ -250,13 +250,52 @@ class LaporanController extends Controller
                 ]);
             }
 
+            $kas_asad = DB::table('transaksi')
+                ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
+                ->where('transaksi.jenis', 'pemasukan')
+                ->where('transaksi.keterangan', 'like', 'Dana Asad%')
+                ->whereBetween('transaksi.tanggal', [$tanggal_awal, $tanggal_akhir])
+                ->select(
+                    DB::raw('SUM(detail_transaksi.jumlah) as total_nominal')
+                )
+                ->first();
+
+            // Tambahkan data Kas Kelompok ke pemasukan jika ada
+            if ($kas_asad && $kas_asad->total_nominal > 0) {
+                $pemasukan = $pemasukan->push((object)[
+                    'tanggal' => $tanggal_akhir,
+                    'keterangan' => 'Dana Asad',
+                    'nominal' => $kas_asad->total_nominal
+                ]);
+            }
+
+            $kas_listrik = DB::table('transaksi')
+                ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
+                ->where('transaksi.jenis', 'pemasukan')
+                ->where('transaksi.keterangan', 'like', 'Dana Listrik%')
+                ->whereBetween('transaksi.tanggal', [$tanggal_awal, $tanggal_akhir])
+                ->select(
+                    DB::raw('SUM(detail_transaksi.jumlah) as total_nominal')
+                )
+                ->first();
+
+            // Tambahkan data Kas Kelompok ke pemasukan jika ada
+            if ($kas_listrik && $kas_listrik->total_nominal > 0) {
+                $pemasukan = $pemasukan->push((object)[
+                    'tanggal' => $tanggal_akhir,
+                    'keterangan' => 'Dana Listrik',
+                    'nominal' => $kas_listrik->total_nominal
+                ]);
+            }
+
             // Sort pemasukan by date after adding new entry
             $pemasukan = $pemasukan->sortBy('tanggal')->values();
 
             // Pengeluaran bulan ini
             $pengeluaran = DB::table('transaksi')
                 ->join('detail_transaksi', 'transaksi.id', '=', 'detail_transaksi.transaksi_id')
-                ->where('transaksi.jenis', 'pengeluaran_kas')
+                ->where('transaksi.jenis', ' like',  'pengeluaran%')
+                // ->where('transaksi.keterangan', 'not like', '%Setor%')
                 ->whereBetween('transaksi.tanggal', [$tanggal_awal, $tanggal_akhir])
                 ->orderBy('transaksi.tanggal')
                 ->get([
