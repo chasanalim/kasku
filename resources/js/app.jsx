@@ -27,6 +27,21 @@ import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot, hydrateRoot } from "react-dom/client";
 
+// Daftarkan service worker PWA (hanya saat production). sw.js dihasilkan
+// vite-plugin-pwa di public/build. Scope diperluas ke seluruh origin dengan
+// meminta scope "/" (header `Service-Worker-Allowed: /` di public/.htaccess
+// mengizinkannya). Jika header tidak ada (mis. server belum dikonfigurasi),
+// registrasi di-fallback ke scope default /build/ tanpa merusak halaman.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker
+            .register("/build/sw.js", { scope: "/" })
+            .catch(() =>
+                navigator.serviceWorker.register("/build/sw.js").catch(() => {})
+            );
+    });
+}
+
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
 createInertiaApp({

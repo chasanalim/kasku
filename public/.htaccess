@@ -30,5 +30,15 @@
     # Header always set Access-Control-Allow-Credentials true
     # </IfModule>
 
+    # PWA: perlebar scope service worker (public/build/sw.js) ke seluruh origin
+    <IfModule mod_headers.c>
+        <FilesMatch "sw\.js$">
+            Header set Service-Worker-Allowed "/"
+        </FilesMatch>
+    </IfModule>
 
+    # PWA: MIME type untuk web app manifest
+    <IfModule mod_mime.c>
+        AddType application/manifest+json .webmanifest
+    </IfModule>
 </IfModule>

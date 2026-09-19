@@ -2,6 +2,7 @@ import AdminLayout from "@/Layouts/admin/AdminLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
+import Select from "react-select";
 
 const KATEGORI_VALUES = {
     A: {
@@ -204,6 +205,16 @@ export default function Create({
         }
     };
 
+    const jamaahOptions = jamaah.map((item) => ({
+        value: String(item.id),
+        label: `${item.nama} | ${item.kategori}`,
+    }));
+
+    const selectedJamaah =
+        jamaahOptions.find(
+            (option) => option.value === String(data.jamaah_id)
+        ) || null;
+
     return (
         <AdminLayout>
             <Head title={title} />
@@ -247,33 +258,30 @@ export default function Create({
                                                 <label className="form-label required">
                                                     Nama Jamaah
                                                 </label>
-                                                <select
-                                                    className={`form-select ${
+                                                <Select
+                                                    options={jamaahOptions}
+                                                    value={selectedJamaah}
+                                                    onChange={(selected) =>
+                                                        setData(
+                                                            "jamaah_id",
+                                                            selected
+                                                                ? selected.value
+                                                                : ""
+                                                        )
+                                                    }
+                                                    placeholder="Ketik untuk cari nama jamaah..."
+                                                    isClearable
+                                                    isSearchable
+                                                    className={
                                                         errors.jamaah_id
                                                             ? "is-invalid"
                                                             : ""
-                                                    }`}
-                                                    value={data.jamaah_id}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "jamaah_id",
-                                                            e.target.value
-                                                        )
                                                     }
-                                                >
-                                                    <option value="">
-                                                        Pilih Jamaah
-                                                    </option>
-                                                    {jamaah.map((item) => (
-                                                        <option
-                                                            key={item.id}
-                                                            value={item.id}
-                                                        >
-                                                            {item.nama} |{" "}
-                                                            {item.kategori}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                    classNamePrefix="react-select"
+                                                    noOptionsMessage={() =>
+                                                        "Jamaah tidak ditemukan"
+                                                    }
+                                                />
                                                 {errors.jamaah_id && (
                                                     <div className="invalid-feedback">
                                                         {errors.jamaah_id}
